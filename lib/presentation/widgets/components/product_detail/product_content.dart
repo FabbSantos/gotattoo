@@ -10,14 +10,14 @@ class ProductContent extends StatelessWidget {
   final VoidCallback onIncrement;
 
   const ProductContent({
-    Key? key,
+    super.key,
     required this.product,
     required this.quantity,
     required this.slideAnimation,
     required this.fadeAnimation,
     required this.onDecrement,
     required this.onIncrement,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
