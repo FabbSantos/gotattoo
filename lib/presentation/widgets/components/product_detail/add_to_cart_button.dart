@@ -38,7 +38,7 @@ class AddToCartButton extends StatelessWidget {
           foregroundColor: Colors.white,
           backgroundColor: Theme.of(context).primaryColor,
           elevation: 8,
-          shadowColor: Theme.of(context).primaryColor.withOpacity(0.5),
+          shadowColor: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

@@ -1,3 +1,4 @@
+import '../../core/error/exceptions.dart';
 import '../models/artist_model.dart';
 
 abstract class ArtistDataSource {
@@ -15,6 +16,7 @@ class ArtistLocalDataSourceImpl implements ArtistDataSource {
       'rating': 4.8,
       'imageUrl':
           'https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      'region': 'Centro',
     },
     {
       'id': '2',
@@ -23,6 +25,7 @@ class ArtistLocalDataSourceImpl implements ArtistDataSource {
       'rating': 4.9,
       'imageUrl':
           'https://images.unsplash.com/photo-1614583225154-5fcdda07019e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      'region': 'Bela Vista',
     },
     {
       'id': '3',
@@ -31,6 +34,7 @@ class ArtistLocalDataSourceImpl implements ArtistDataSource {
       'rating': 4.7,
       'imageUrl':
           'https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      'region': 'Centro',
     },
     {
       'id': '4',
@@ -39,6 +43,7 @@ class ArtistLocalDataSourceImpl implements ArtistDataSource {
       'rating': 4.6,
       'imageUrl':
           'https://images.unsplash.com/photo-1542458580-9d880e2a6bdd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      'region': 'Bela Vista',
     },
     {
       'id': '5',
@@ -47,6 +52,7 @@ class ArtistLocalDataSourceImpl implements ArtistDataSource {
       'rating': 4.5,
       'imageUrl':
           'https://images.unsplash.com/photo-1591190895404-20b87628ce5c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      'region': 'Jardim Primavera',
     },
   ];
 
@@ -67,7 +73,7 @@ class ArtistLocalDataSourceImpl implements ArtistDataSource {
     // Buscar o artista pelo ID
     final artistData = _artistsData.firstWhere(
       (artist) => artist['id'] == id,
-      orElse: () => throw Exception('Artista não encontrado'),
+      orElse: () => throw const NotFoundException('Tatuador não encontrado.'),
     );
 
     return ArtistModel.fromJson(artistData);

@@ -1,24 +1,44 @@
+import 'package:equatable/equatable.dart';
 import '../../../domain/entities/artist.dart';
 
-abstract class ArtistState {}
+abstract class ArtistState extends Equatable {
+  const ArtistState();
 
-class ArtistInitial extends ArtistState {}
+  @override
+  List<Object?> get props => [];
+}
 
-class ArtistsLoading extends ArtistState {}
+class ArtistInitial extends ArtistState {
+  const ArtistInitial();
+}
+
+class ArtistsLoading extends ArtistState {
+  const ArtistsLoading();
+}
 
 class ArtistsLoaded extends ArtistState {
   final List<Artist> artists;
-  ArtistsLoaded(this.artists);
+
+  const ArtistsLoaded(this.artists);
+
+  @override
+  List<Object?> get props => [artists];
 }
 
 class ArtistLoaded extends ArtistState {
   final Artist artist;
-  ArtistLoaded(this.artist);
+
+  const ArtistLoaded(this.artist);
+
+  @override
+  List<Object?> get props => [artist];
 }
 
 class ArtistError extends ArtistState {
   final String message;
-  ArtistError(this.message);
-}
 
-class ArtistActionSuccess extends ArtistState {}
+  const ArtistError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

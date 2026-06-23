@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -10,73 +11,48 @@ class ProductRepositoryImpl implements ProductRepository {
 
   ProductRepositoryImpl({required this.localDataSource});
 
-  @override
-  Future<Either<Failure, List<Product>>> getProducts() async {
+  /// Runs [action] and maps any datasource exception to a domain [Failure],
+  /// so callers never see raw exception details.
+  Future<Either<Failure, T>> _guard<T>(Future<T> Function() action) async {
     try {
-      final products = await localDataSource.getProducts();
-      return Right(products);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Right(await action());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    } on CacheException catch (e) {
+      return Left(CacheFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (_) {
+      return const Left(ServerFailure());
     }
   }
 
   @override
-  Future<Either<Failure, Product>> getProduct(String id) async {
-    try {
-      final product = await localDataSource.getProduct(id);
-      return Right(product);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
+  Future<Either<Failure, List<Product>>> getProducts() {
+    return _guard(() => localDataSource.getProducts());
   }
 
   @override
-  Future<Either<Failure, void>> addProduct(Product product) async {
-    try {
-      await localDataSource.addProduct(
-        ProductModel(
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          imageUrl: product.imageUrl,
-          stock: product.stock,
-          category: product.category,
-        ),
-      );
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
+  Future<Either<Failure, Product>> getProduct(String id) {
+    return _guard(() => localDataSource.getProduct(id));
   }
 
   @override
-  Future<Either<Failure, void>> updateProduct(Product product) async {
-    try {
-      await localDataSource.updateProduct(
-        ProductModel(
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          imageUrl: product.imageUrl,
-          stock: product.stock,
-          category: product.category,
-        ),
-      );
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
+  Future<Either<Failure, void>> addProduct(Product product) {
+    return _guard(
+      () => localDataSource.addProduct(ProductModel.fromEntity(product)),
+    );
   }
 
   @override
-  Future<Either<Failure, void>> deleteProduct(String id) async {
-    try {
-      await localDataSource.deleteProduct(id);
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
+  Future<Either<Failure, void>> updateProduct(Product product) {
+    return _guard(
+      () => localDataSource.updateProduct(ProductModel.fromEntity(product)),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteProduct(String id) {
+    return _guard(() => localDataSource.deleteProduct(id));
   }
 }

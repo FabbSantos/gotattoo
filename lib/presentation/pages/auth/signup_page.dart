@@ -1,0 +1,156 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../domain/entities/user_role.dart';
+import '../../bloc/auth/auth_cubit.dart';
+import '../../bloc/auth/auth_state.dart';
+
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  UserRole _role = UserRole.client;
+  bool _obscure = true;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    context.read<AuthCubit>().signUp(
+      name: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      role: _role,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // The auth gate (in main.dart) swaps to the home page once authenticated,
+    // so on success we just pop back to let the gate take over.
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (prev, curr) => curr.status == AuthStatus.authenticated,
+      listener: (context, state) => Navigator.of(context).pop(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Criar conta')),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nome',
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                  validator: (v) =>
+                      (v == null || v.isEmpty) ? 'Informe seu nome' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'E-mail',
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
+                  validator: (v) =>
+                      (v == null || !v.contains('@')) ? 'E-mail inválido' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscure,
+                  decoration: InputDecoration(
+                    labelText: 'Senha',
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscure ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () => setState(() => _obscure = !_obscure),
+                    ),
+                  ),
+                  validator: (v) => (v == null || v.length < 4)
+                      ? 'Mínimo 4 caracteres'
+                      : null,
+                ),
+                const SizedBox(height: 20),
+                const Text('Quero usar como:'),
+                const SizedBox(height: 8),
+                SegmentedButton<UserRole>(
+                  segments: const [
+                    ButtonSegment(
+                      value: UserRole.client,
+                      label: Text('Cliente'),
+                      icon: Icon(Icons.shopping_bag_outlined),
+                    ),
+                    ButtonSegment(
+                      value: UserRole.artist,
+                      label: Text('Tatuador'),
+                      icon: Icon(Icons.brush),
+                    ),
+                  ],
+                  selected: {_role},
+                  onSelectionChanged: (selection) =>
+                      setState(() => _role = selection.first),
+                ),
+                const SizedBox(height: 24),
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (state.error != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Text(
+                              state.error!,
+                              style: const TextStyle(color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        SizedBox(
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: state.submitting ? null : _submit,
+                            child: state.submitting
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text('Cadastrar'),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

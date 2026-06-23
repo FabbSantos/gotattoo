@@ -1,14 +1,16 @@
 import 'package:dartz/dartz.dart';
 import '../../core/error/failures.dart';
+import '../../core/usecases/usecase.dart';
 import '../entities/artist.dart';
 import '../repositories/artist_repository.dart';
 
-class GetOneArtist {
+class GetOneArtist implements UseCase<Artist, IdParams> {
   final ArtistRepository repository;
 
   GetOneArtist(this.repository);
 
-  Future<Either<Failure, Artist>> call(String id) async {
-    return await repository.getArtist(id);
+  @override
+  Future<Either<Failure, Artist>> call(IdParams params) {
+    return repository.getArtist(params.id);
   }
 }

@@ -1,25 +1,21 @@
-import '../../../domain/entities/artist.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class ArtistEvent {}
+abstract class ArtistEvent extends Equatable {
+  const ArtistEvent();
 
-class GetArtistsEvent extends ArtistEvent {}
+  @override
+  List<Object?> get props => [];
+}
+
+class GetArtistsEvent extends ArtistEvent {
+  const GetArtistsEvent();
+}
 
 class GetArtistEvent extends ArtistEvent {
   final String id;
-  GetArtistEvent(this.id);
-}
 
-class AddArtistEvent extends ArtistEvent {
-  final Artist artist;
-  AddArtistEvent(this.artist);
-}
+  const GetArtistEvent(this.id);
 
-class UpdateArtistEvent extends ArtistEvent {
-  final Artist artist;
-  UpdateArtistEvent(this.artist);
-}
-
-class DeleteArtistEvent extends ArtistEvent {
-  final String id;
-  DeleteArtistEvent(this.id);
+  @override
+  List<Object?> get props => [id];
 }

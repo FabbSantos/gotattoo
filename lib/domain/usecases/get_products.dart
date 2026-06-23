@@ -10,9 +10,7 @@ class GetProducts implements UseCase<List<Product>, NoParams> {
   GetProducts(this.repository);
 
   @override
-  Future<Either<Failure, List<Product>>> call(NoParams params) async {
-    return await repository.getProducts();
+  Future<Either<Failure, List<Product>>> call(NoParams params) {
+    return repository.getProducts();
   }
 }
-
-class NoParams {}

@@ -32,7 +32,7 @@ class ProductImageHeader extends StatelessWidget {
                               : null,
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).primaryColor.withOpacity(0.7),
+                        Theme.of(context).primaryColor.withValues(alpha: 0.7),
                       ),
                     ),
                   ),
@@ -46,10 +46,10 @@ class ProductImageHeader extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.5),
+                    Colors.black.withValues(alpha: 0.5),
                     Colors.transparent,
                     Colors.transparent,
-                    Colors.black.withOpacity(0.7),
+                    Colors.black.withValues(alpha: 0.7),
                   ],
                   stops: const [0.0, 0.2, 0.7, 1.0],
                 ),

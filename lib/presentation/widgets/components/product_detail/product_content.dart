@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../domain/entities/product.dart';
 
 class ProductContent extends StatelessWidget {
-  final dynamic product;
+  final Product product;
   final int quantity;
   final Animation<Offset> slideAnimation;
   final Animation<double> fadeAnimation;
   final VoidCallback onDecrement;
   final VoidCallback onIncrement;
+  final VoidCallback onBook;
+  final VoidCallback onViewArtist;
 
   const ProductContent({
     super.key,
@@ -17,6 +20,8 @@ class ProductContent extends StatelessWidget {
     required this.fadeAnimation,
     required this.onDecrement,
     required this.onIncrement,
+    required this.onBook,
+    required this.onViewArtist,
   });
 
   @override
@@ -34,7 +39,7 @@ class ProductContent extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 spreadRadius: 0,
                 blurRadius: 10,
                 offset: const Offset(0, -2),
@@ -67,7 +72,7 @@ class ProductContent extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Theme.of(
                             context,
-                          ).primaryColor.withOpacity(0.1),
+                          ).primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -96,7 +101,7 @@ class ProductContent extends StatelessWidget {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -127,7 +132,7 @@ class ProductContent extends StatelessWidget {
               const SizedBox(height: 24),
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -144,13 +149,43 @@ class ProductContent extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'R\$ ${product.price.toStringAsFixed(2)}',
+                      'R\$ ${product.effectivePrice.toStringAsFixed(2)}',
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
                     ),
+                    if (product.hasDiscount) ...[
+                      const SizedBox(width: 10),
+                      Text(
+                        'R\$ ${product.price.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '-${product.discountPercent}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -168,6 +203,13 @@ class ProductContent extends StatelessWidget {
                   color: Colors.grey[700],
                   height: 1.5,
                 ),
+              ),
+
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: onViewArtist,
+                icon: const Icon(Icons.person_outline, size: 18),
+                label: const Text('Ver perfil do tatuador'),
               ),
 
               const SizedBox(height: 24),
@@ -273,22 +315,7 @@ class ProductContent extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     HapticFeedback.mediumImpact();
-                    // Adicionar animação do botão sendo pressionado
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '${product.name} adicionado ao carrinho!',
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                        duration: const Duration(seconds: 2),
-                        action: SnackBarAction(
-                          label: 'VER CARRINHO',
-                          onPressed: () {
-                            // Implementação futura: navegar para o carrinho
-                          },
-                        ),
-                      ),
-                    );
+                    onBook();
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
@@ -296,13 +323,13 @@ class ProductContent extends StatelessWidget {
                     elevation: 8,
                     shadowColor: Theme.of(
                       context,
-                    ).primaryColor.withOpacity(0.5),
+                    ).primaryColor.withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: const Text(
-                    'ADICIONAR AO CARRINHO',
+                    'AGENDAR',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),

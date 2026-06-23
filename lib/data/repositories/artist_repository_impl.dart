@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/artist.dart';
 import '../../domain/repositories/artist_repository.dart';
@@ -9,23 +10,27 @@ class ArtistRepositoryImpl implements ArtistRepository {
 
   ArtistRepositoryImpl({required this.localDataSource});
 
-  @override
-  Future<Either<Failure, List<Artist>>> getArtists() async {
+  Future<Either<Failure, T>> _guard<T>(Future<T> Function() action) async {
     try {
-      final artists = await localDataSource.getArtists();
-      return Right(artists);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Right(await action());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    } on CacheException catch (e) {
+      return Left(CacheFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (_) {
+      return const Left(ServerFailure());
     }
   }
 
   @override
-  Future<Either<Failure, Artist>> getArtist(String id) async {
-    try {
-      final artist = await localDataSource.getArtist(id);
-      return Right(artist);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
+  Future<Either<Failure, List<Artist>>> getArtists() {
+    return _guard(() => localDataSource.getArtists());
+  }
+
+  @override
+  Future<Either<Failure, Artist>> getArtist(String id) {
+    return _guard(() => localDataSource.getArtist(id));
   }
 }

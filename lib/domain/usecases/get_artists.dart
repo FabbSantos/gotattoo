@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:gotattoo/domain/usecases/get_products.dart';
 import '../../core/error/failures.dart';
 import '../../core/usecases/usecase.dart';
 import '../entities/artist.dart';
@@ -11,7 +10,7 @@ class GetArtists implements UseCase<List<Artist>, NoParams> {
   GetArtists(this.repository);
 
   @override
-  Future<Either<Failure, List<Artist>>> call(NoParams params) async {
-    return await repository.getArtists();
+  Future<Either<Failure, List<Artist>>> call(NoParams params) {
+    return repository.getArtists();
   }
 }

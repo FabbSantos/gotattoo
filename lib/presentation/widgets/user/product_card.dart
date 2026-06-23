@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/product.dart';
+import '../components/common/marquee_text.dart';
 
 class ProductCard extends StatefulWidget {
   final Product product;
@@ -84,7 +85,7 @@ class _ProductCardState extends State<ProductCard>
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                   Theme.of(
                                     context,
-                                  ).primaryColor.withOpacity(0.7),
+                                  ).primaryColor.withValues(alpha: 0.7),
                                 ),
                               ),
                             ),
@@ -113,24 +114,62 @@ class _ProductCardState extends State<ProductCard>
                               BoxShadow(
                                 color: Theme.of(
                                   context,
-                                ).primaryColor.withOpacity(0.3),
+                                ).primaryColor.withValues(alpha: 0.3),
                                 spreadRadius: 0,
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: Text(
-                            'R\$ ${widget.product.price.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (widget.product.hasDiscount)
+                                Text(
+                                  'R\$ ${widget.product.price.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 9,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              Text(
+                                'R\$ ${widget.product.effectivePrice.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
+                    if (widget.product.hasDiscount)
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '-${widget.product.discountPercent}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -147,25 +186,27 @@ class _ProductCardState extends State<ProductCard>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      MarqueeText(
                         widget.product.name,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 6),
-                      Flexible(
-                        child: Text(
-                          widget.product.description,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[700],
+                      // Fixed ~3-line window; the full description scrolls
+                      // within it (no truncation, no auto-slicing).
+                      SizedBox(
+                        height: 48,
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: Text(
+                            widget.product.description,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[700],
+                            ),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(height: 6),

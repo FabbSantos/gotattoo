@@ -1,3 +1,4 @@
+import '../../core/error/exceptions.dart';
 import '../models/product_model.dart';
 
 abstract class ProductLocalDataSource {
@@ -9,7 +10,8 @@ abstract class ProductLocalDataSource {
 }
 
 class ProductLocalDataSourceImpl implements ProductLocalDataSource {
-  // Mock data de tatuagens para simular um banco de dados
+  // Mock data de tatuagens para simular um banco de dados.
+  // `artistId` referencia um tatuador em ArtistLocalDataSourceImpl (ids 1..5).
   final List<Map<String, dynamic>> _products = [
     {
       'id': '1',
@@ -21,6 +23,8 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://w7.pngwing.com/pngs/265/490/png-transparent-easten-dragon-red-oriental-dragon-tattoo-thumbnail.png',
       'stock': 5,
       'category': 'Old School',
+      'artistId': '3',
+      'discountPercent': 15,
     },
     {
       'id': '2',
@@ -32,6 +36,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://st.depositphotos.com/1052445/4100/v/450/depositphotos_41003087-stock-illustration-swallow-and-rose-old-school.jpg',
       'stock': 3,
       'category': 'New School',
+      'artistId': '1',
     },
     {
       'id': '3',
@@ -43,6 +48,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://img.lovepik.com/png/20231029/Maori-tribal-style-tattoo-pattern-black-sea-turtle-black-and_405507_wh860.png',
       'stock': 8,
       'category': 'Tribal',
+      'artistId': '4',
     },
     {
       'id': '4',
@@ -54,6 +60,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://desenhosrealistas.com.br/wp-content/uploads/2018/08/tatuagem-realista.jpg',
       'stock': 2,
       'category': 'Realista',
+      'artistId': '1',
     },
     {
       'id': '5',
@@ -65,6 +72,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://static.vecteezy.com/ti/vetor-gratis/p1/9751732-contorno-geometrico-mandala-elemento-vetor.jpg',
       'stock': 10,
       'category': 'Geométrica',
+      'artistId': '5',
     },
     {
       'id': '6',
@@ -76,6 +84,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://www.dubuddha.org/wp-content/uploads/2017/05/Blackwork-Flowers-Tattoo-Sleeve-by-Jakob-Holst-Rasmussen.jpg',
       'stock': 6,
       'category': 'Blackwork',
+      'artistId': '4',
     },
     {
       'id': '7',
@@ -87,6 +96,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://img.freepik.com/fotos-premium/pintura-de-aquarela-abstrata-ondas-coloridas-e-vibrantes-cores-brilhantes-do-arco-iris-arte-fluida_14117-102861.jpg',
       'stock': 4,
       'category': 'Aquarela',
+      'artistId': '2',
     },
     {
       'id': '8',
@@ -98,6 +108,8 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://i.pinimg.com/564x/15/78/6d/15786d30f21ee6b9e691edbbfada1675.jpg',
       'stock': 15,
       'category': 'Minimalista',
+      'artistId': '5',
+      'discountPercent': 20,
     },
     {
       'id': '9',
@@ -109,6 +121,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVkIMf0OIDAJY4y45SflZb-HuV3r1lfrRJDw&s',
       'stock': 7,
       'category': 'Old School',
+      'artistId': '3',
     },
     {
       'id': '10',
@@ -120,6 +133,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLF2EFlusTGAZ_ZqaEYQ4yXcADvnY3QptwJA&s',
       'stock': 3,
       'category': 'Realista',
+      'artistId': '1',
     },
     {
       'id': '11',
@@ -131,6 +145,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://i.pinimg.com/564x/a7/ff/0e/a7ff0eee947438b0289c544c87c64a0f.jpg',
       'stock': 5,
       'category': 'Aquarela',
+      'artistId': '2',
     },
     {
       'id': '12',
@@ -142,6 +157,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://blog.tattoo2me.com/wp-content/uploads/2023/06/IMG_1076.jpeg',
       'stock': 9,
       'category': 'Geométrica',
+      'artistId': '5',
     },
     {
       'id': '13',
@@ -153,6 +169,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://i.pinimg.com/564x/39/66/f3/3966f3bcdfb9051e966b9851dee01983.jpg',
       'stock': 6,
       'category': 'New School',
+      'artistId': '2',
     },
     {
       'id': '14',
@@ -164,6 +181,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://i.pinimg.com/564x/96/46/85/9646850b49afab7eb4f3c688a4b7033b.jpg',
       'stock': 4,
       'category': 'Tribal',
+      'artistId': '3',
     },
     {
       'id': '15',
@@ -174,6 +192,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
       'imageUrl': 'https://cdntattoofilter.com/tattoo/393832/l.jpg',
       'stock': 5,
       'category': 'Blackwork',
+      'artistId': '4',
     },
     {
       'id': '16',
@@ -185,6 +204,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
           'https://psychodolltattoo.com/wp-content/uploads/2022/09/psycho-doll-tattoo-studio-mallorca5-TATUAJES-768x1592.jpg',
       'stock': 20,
       'category': 'Minimalista',
+      'artistId': '1',
     },
   ];
 
@@ -202,7 +222,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
         .map((json) => ProductModel.fromJson(json))
         .firstWhere(
           (product) => product.id == id,
-          orElse: () => throw Exception('Produto não encontrado'),
+          orElse: () => throw const NotFoundException('Tatuagem não encontrada.'),
         );
   }
 
@@ -219,7 +239,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     if (index != -1) {
       _products[index] = product.toJson();
     } else {
-      throw Exception('Produto não encontrado');
+      throw const NotFoundException('Tatuagem não encontrada.');
     }
   }
 
