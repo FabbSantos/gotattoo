@@ -14,6 +14,7 @@ declare
     'reports',
     'tattoo_requests',
     'notifications',
+    'device_tokens',
     'reviews',
     'messages',
     'conversations',
