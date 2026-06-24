@@ -12,6 +12,6 @@ abstract class ArtistRepository {
   /// Owner action: approve a pending artist (sets role = artist).
   Future<Either<Failure, void>> approveArtist(String id);
 
-  /// Owner action: reject a pending artist.
-  Future<Either<Failure, void>> rejectArtist(String id);
+  /// Owner action: reject a pending artist, with a reason shown to them.
+  Future<Either<Failure, void>> rejectArtist(String id, String reason);
 }

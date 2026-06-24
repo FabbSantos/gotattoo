@@ -43,6 +43,6 @@ class ArtistRepositoryImpl implements ArtistRepository {
       const Right(null);
 
   @override
-  Future<Either<Failure, void>> rejectArtist(String id) async =>
+  Future<Either<Failure, void>> rejectArtist(String id, String reason) async =>
       const Right(null);
 }

@@ -94,6 +94,12 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  /// Ask (or re-ask) to become an artist, then refresh so the UI updates.
+  Future<void> requestArtist(String portfolio) async {
+    await repository.requestArtist(portfolio);
+    await refresh();
+  }
+
   Future<void> logout() async {
     await repository.logout();
     emit(const AuthState(status: AuthStatus.unauthenticated));

@@ -31,12 +31,26 @@ class _PendingArtistsPageState extends State<PendingArtistsPage> {
     setState(() => _items = res.fold((_) => <Artist>[], (a) => a));
   }
 
-  Future<void> _decide(Artist a, {required bool approve}) async {
+  Future<void> _reject(Artist a) async {
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (_) => _RejectDialog(name: a.name),
+    );
+    if (reason != null && reason.isNotEmpty) {
+      _decide(a, approve: false, reason: reason);
+    }
+  }
+
+  Future<void> _decide(
+    Artist a, {
+    required bool approve,
+    String reason = '',
+  }) async {
     setState(() => _busyId = a.id);
     final repo = sl<ArtistRepository>();
     final res = await (approve
         ? repo.approveArtist(a.id)
-        : repo.rejectArtist(a.id));
+        : repo.rejectArtist(a.id, reason));
     if (!mounted) return;
     setState(() => _busyId = null);
     res.fold(
@@ -160,7 +174,7 @@ class _PendingArtistsPageState extends State<PendingArtistsPage> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: busy ? null : () => _decide(a, approve: false),
+                    onPressed: busy ? null : () => _reject(a),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                     ),
@@ -186,6 +200,86 @@ class _PendingArtistsPageState extends State<PendingArtistsPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Asks the owner why an artist application is being rejected. Returns the
+/// chosen reason (or the custom text for "Outros"), or null if cancelled.
+class _RejectDialog extends StatefulWidget {
+  final String name;
+
+  const _RejectDialog({required this.name});
+
+  @override
+  State<_RejectDialog> createState() => _RejectDialogState();
+}
+
+class _RejectDialogState extends State<_RejectDialog> {
+  static const _reasons = [
+    'Conta fake',
+    'Sem portfólio',
+    'Não foi possível verificar',
+    'Outros',
+  ];
+
+  String _selected = _reasons.first;
+  final _otherController = TextEditingController();
+
+  @override
+  void dispose() {
+    _otherController.dispose();
+    super.dispose();
+  }
+
+  bool get _isOther => _selected == 'Outros';
+
+  void _confirm() {
+    final reason = _isOther
+        ? (_otherController.text.trim().isEmpty
+            ? 'Outros'
+            : _otherController.text.trim())
+        : _selected;
+    Navigator.pop(context, reason);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Recusar ${widget.name}'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final r in _reasons)
+            RadioListTile<String>(
+              value: r,
+              groupValue: _selected,
+              onChanged: (v) => setState(() => _selected = v!),
+              title: Text(r),
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+            ),
+          if (_isOther)
+            TextField(
+              controller: _otherController,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Motivo (opcional)',
+              ),
+            ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
+        FilledButton(
+          onPressed: _confirm,
+          style: FilledButton.styleFrom(backgroundColor: Colors.red),
+          child: const Text('Recusar'),
+        ),
+      ],
     );
   }
 }

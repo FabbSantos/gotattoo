@@ -36,6 +36,7 @@ class SupabaseAuthRepository implements AuthRepository {
       isOwner: map['is_owner'] as bool? ?? false,
       artistStatus: map['artist_status'] as String? ?? 'none',
       portfolio: map['portfolio'] as String? ?? '',
+      rejectReason: map['reject_reason'] as String? ?? '',
     );
   }
 
@@ -170,6 +171,11 @@ class SupabaseAuthRepository implements AuthRepository {
       await client.from('profiles').update(updates).eq('id', user.id);
     }
     return _toUser(user);
+  }
+
+  @override
+  Future<void> requestArtist(String portfolio) async {
+    await client.rpc('request_artist', params: {'p_portfolio': portfolio});
   }
 
   @override

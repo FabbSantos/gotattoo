@@ -80,9 +80,12 @@ class SupabaseArtistRepository implements ArtistRepository {
   }
 
   @override
-  Future<Either<Failure, void>> rejectArtist(String id) async {
+  Future<Either<Failure, void>> rejectArtist(String id, String reason) async {
     try {
-      await client.rpc('reject_artist', params: {'p_id': id});
+      await client.rpc('reject_artist', params: {
+        'p_id': id,
+        'p_reason': reason,
+      });
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

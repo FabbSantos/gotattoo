@@ -6,6 +6,10 @@ abstract class Brand {
   static const String name = 'GoTattoo';
   static const String tagline = 'Encontre o seu tatuador ideal';
 
+  /// Support contact. Placeholder until a dedicated GoTattoo inbox exists —
+  /// change here when the real address is ready.
+  static const String supportEmail = 'fabriciobs2000@gmail.com';
+
   /// Transparent square logo (the red "G" tattoo-machine mark).
   static const String logoAsset = 'assets/brand/logo.png';
 

@@ -151,6 +151,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> requestArtist(String portfolio) async {}
+
+  @override
   Future<void> logout() async {
     await prefs.remove(_currentKey);
   }

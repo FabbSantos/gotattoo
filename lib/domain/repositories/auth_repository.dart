@@ -29,5 +29,9 @@ abstract class AuthRepository {
     String? portfolio,
   });
 
+  /// Ask (or re-ask) to become an artist: sets status to pending, saves the
+  /// portfolio link and notifies the owner.
+  Future<void> requestArtist(String portfolio);
+
   Future<void> logout();
 }

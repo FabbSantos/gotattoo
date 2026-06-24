@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/constants/brand.dart';
 import '../../../core/di/injection_container.dart';
 import '../../../core/services/payment_service.dart';
 import '../../../core/utils/avatar_image.dart';
+import '../../../domain/entities/auth_user.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/auth/auth_state.dart';
 import '../../widgets/components/common/owner_tag.dart';
@@ -99,7 +102,55 @@ class AccountPage extends StatelessWidget {
                     ],
                   ),
                 ),
+              if (user != null &&
+                  !user.isArtist &&
+                  user.artistStatus == 'rejected')
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.info_outline, color: Colors.red),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              user.rejectReason.isEmpty
+                                  ? 'Seu pedido de tatuador não foi aprovado.'
+                                  : 'Pedido recusado: ${user.rejectReason}',
+                              style: TextStyle(
+                                  color: Colors.grey[800], fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => _requestArtist(context, user),
+                          child: const Text('Tentar de novo'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               const SizedBox(height: 24),
+              if (user != null &&
+                  !user.isArtist &&
+                  user.artistStatus == 'none')
+                ListTile(
+                  leading: const Icon(Icons.brush_outlined),
+                  title: const Text('Quero ser tatuador'),
+                  subtitle: const Text('Cadastre seu portfólio pra análise'),
+                  onTap: () => _requestArtist(context, user),
+                ),
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
                 title: const Text('Editar Perfil'),
@@ -175,6 +226,12 @@ class AccountPage extends StatelessWidget {
                 subtitle: const Text('Curtindo? Deixe uma nota na loja 💜'),
                 onTap: _rate,
               ),
+              ListTile(
+                leading: const Icon(Icons.help_outline),
+                title: const Text('Ajuda e suporte'),
+                subtitle: const Text('Fale com a gente'),
+                onTap: _support,
+              ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
@@ -185,6 +242,57 @@ class AccountPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Future<void> _requestArtist(BuildContext context, AuthUser user) async {
+    final controller = TextEditingController(text: user.portfolio);
+    final cubit = context.read<AuthCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Quero ser tatuador'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Cole o link do seu portfólio (Instagram, site...). '
+              'O GoTattoo analisa e te aprova.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.url,
+              decoration: const InputDecoration(
+                hintText: 'Link do portfólio',
+                prefixIcon: Icon(Icons.link),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Enviar'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    if (controller.text.trim().isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Informe o link do seu portfólio.')),
+      );
+      return;
+    }
+    await cubit.requestArtist(controller.text.trim());
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Pedido enviado! Você será avisado.')),
     );
   }
 
@@ -203,6 +311,19 @@ class AccountPage extends StatelessWidget {
       await review.requestReview();
     } else {
       await review.openStoreListing();
+    }
+  }
+
+  Future<void> _support() async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: Brand.supportEmail,
+      query: 'subject=${Uri.encodeComponent('Suporte GoTattoo')}',
+    );
+    try {
+      await launchUrl(uri);
+    } catch (_) {
+      // No mail app — nothing we can do.
     }
   }
 }
