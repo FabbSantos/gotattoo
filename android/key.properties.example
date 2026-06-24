@@ -1,0 +1,13 @@
+# Release signing — copy this file to `android/key.properties` and fill in.
+# NEVER commit the real key.properties or the .jks (both are gitignored).
+#
+# 1) Generate the keystore (on the computer, once):
+#    keytool -genkey -v -keystore gotattoo-release.jks \
+#      -keyalg RSA -keysize 2048 -validity 10000 -alias gotattoo
+# 2) Put gotattoo-release.jks in android/app/
+# 3) Fill the values below and save as android/key.properties
+
+storeFile=gotattoo-release.jks
+storePassword=CHANGE_ME
+keyAlias=gotattoo
+keyPassword=CHANGE_ME
