@@ -32,6 +32,9 @@ class FakeNotificationRepository implements NotificationRepository {
   Future<void> markAllRead(String userId) async => markedRead = true;
 
   @override
+  Future<void> clearAll(String userId) async {}
+
+  @override
   Stream<AppNotification> stream(String userId) => controller.stream;
 }
 

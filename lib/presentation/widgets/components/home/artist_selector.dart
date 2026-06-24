@@ -5,6 +5,7 @@ import '../../../../core/services/location_service.dart';
 import '../../../../domain/entities/artist.dart';
 import '../../../bloc/artist/artist_bloc.dart';
 import '../../../bloc/artist/artist_state.dart';
+import '../../../pages/artist/artist_profile_page.dart';
 
 /// Max distance (km) for the "nearby" filter when a client location is set.
 const double _nearbyRadiusKm = 60;
@@ -27,6 +28,55 @@ class ArtistSelector extends StatelessWidget {
   });
 
   bool get _hasLocation => clientLat != null && clientLng != null;
+
+  /// Long-press menu: quick access to the artist's profile (the tap is reserved
+  /// for filtering the catalog).
+  void _openArtistMenu(BuildContext context, Artist artist) {
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.grey[200],
+                backgroundImage: NetworkImage(artist.imageUrl),
+              ),
+              title: Text(
+                artist.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(artist.specialty),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: const Text('Ver perfil'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        ArtistProfilePage(artist: artist, artistId: artist.id),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.filter_alt_outlined),
+              title: const Text('Filtrar por este tatuador'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                onSelected(artist.id);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   double? _distanceTo(Artist a) {
     if (!_hasLocation || !a.hasLocation) return null;
@@ -106,6 +156,10 @@ class ArtistSelector extends StatelessWidget {
                         onTap: () {
                           HapticFeedback.lightImpact();
                           onSelected(isSelected ? null : artist.id);
+                        },
+                        onLongPress: () {
+                          HapticFeedback.mediumImpact();
+                          _openArtistMenu(context, artist);
                         },
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 8),

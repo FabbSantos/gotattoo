@@ -45,6 +45,14 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     ));
   }
 
+  /// Delete all notifications for the current user.
+  Future<void> clearAll() async {
+    final userId = _userId;
+    if (userId == null) return;
+    await repository.clearAll(userId);
+    emit(const NotificationsState());
+  }
+
   /// Drop the subscription and state (e.g. on logout).
   void stop() {
     _sub?.cancel();

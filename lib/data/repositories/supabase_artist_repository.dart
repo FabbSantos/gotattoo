@@ -21,6 +21,7 @@ class SupabaseArtistRepository implements ArtistRepository {
     latitude: (r['latitude'] as num?)?.toDouble(),
     longitude: (r['longitude'] as num?)?.toDouble(),
     featured: r['featured'] as bool? ?? false,
+    isOwner: r['is_owner'] as bool? ?? false,
   );
 
   @override

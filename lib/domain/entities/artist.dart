@@ -17,6 +17,9 @@ class Artist extends Equatable {
   /// Promoted artist ("Destaque") — sorted first and badged in the UI.
   final bool featured;
 
+  /// The app owner — badged with a "Dono" tag.
+  final bool isOwner;
+
   const Artist({
     required this.id,
     required this.name,
@@ -27,6 +30,7 @@ class Artist extends Equatable {
     this.latitude,
     this.longitude,
     this.featured = false,
+    this.isOwner = false,
   });
 
   bool get isRated => rating > 0;
@@ -47,5 +51,6 @@ class Artist extends Equatable {
     latitude,
     longitude,
     featured,
+    isOwner,
   ];
 }

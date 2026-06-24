@@ -11,5 +11,8 @@ class LocalNotificationRepository implements NotificationRepository {
   Future<void> markAllRead(String userId) async {}
 
   @override
+  Future<void> clearAll(String userId) async {}
+
+  @override
   Stream<AppNotification> stream(String userId) => const Stream.empty();
 }

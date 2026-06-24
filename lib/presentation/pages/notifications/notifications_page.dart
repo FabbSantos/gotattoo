@@ -44,10 +44,45 @@ class _NotificationsPageState extends State<NotificationsPage> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => dest));
   }
 
+  Future<void> _clearAll() async {
+    final cubit = context.read<NotificationsCubit>();
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Limpar notificações'),
+        content: const Text('Apagar todas as notificações? Não dá pra desfazer.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Limpar'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) await cubit.clearAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notificações')),
+      appBar: AppBar(
+        title: const Text('Notificações'),
+        actions: [
+          BlocBuilder<NotificationsCubit, NotificationsState>(
+            builder: (context, state) => state.items.isEmpty
+                ? const SizedBox.shrink()
+                : IconButton(
+                    icon: const Icon(Icons.delete_sweep_outlined),
+                    tooltip: 'Limpar todas',
+                    onPressed: _clearAll,
+                  ),
+          ),
+        ],
+      ),
       body: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
           if (state.loading && state.items.isEmpty) {

@@ -10,6 +10,7 @@ import '../../../domain/repositories/tattoo_request_repository.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/feed/request_comments_cubit.dart';
 import '../../widgets/components/common/artist_tag.dart';
+import '../../widgets/components/common/owner_tag.dart';
 import '../../widgets/components/common/sensitive_image.dart';
 import '../chat/chat_page.dart';
 import 'create_request_page.dart';
@@ -250,6 +251,10 @@ class _DetailViewState extends State<_DetailView> {
                         style: TextStyle(color: Colors.grey[600], fontSize: 13),
                       ),
                     ),
+                    if (r.authorIsOwner) ...[
+                      const SizedBox(width: 6),
+                      const OwnerTag(),
+                    ],
                     if (r.authorIsArtist) ...[
                       const SizedBox(width: 6),
                       const ArtistTag(),
@@ -411,6 +416,10 @@ class _CommentTile extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (comment.authorIsOwner) ...[
+                      const SizedBox(width: 6),
+                      const OwnerTag(),
+                    ],
                     if (comment.authorIsArtist) ...[
                       const SizedBox(width: 6),
                       const ArtistTag(),

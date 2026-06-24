@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/utils/avatar_image.dart';
+import '../../../../domain/entities/artist.dart';
 import '../../../../domain/entities/product.dart';
+import '../../../../domain/repositories/artist_repository.dart';
 
 class ProductContent extends StatelessWidget {
   final Product product;
@@ -206,11 +210,7 @@ class ProductContent extends StatelessWidget {
               ),
 
               const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: onViewArtist,
-                icon: const Icon(Icons.person_outline, size: 18),
-                label: const Text('Ver perfil do tatuador'),
-              ),
+              _ArtistByline(artistId: product.artistId, onTap: onViewArtist),
 
               const SizedBox(height: 24),
               Row(
@@ -336,6 +336,95 @@ class ProductContent extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Feito por [tatuador]" row that loads the artist once and opens the profile
+/// on tap.
+class _ArtistByline extends StatefulWidget {
+  final String artistId;
+  final VoidCallback onTap;
+
+  const _ArtistByline({required this.artistId, required this.onTap});
+
+  @override
+  State<_ArtistByline> createState() => _ArtistBylineState();
+}
+
+class _ArtistBylineState extends State<_ArtistByline> {
+  Artist? _artist;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      sl<ArtistRepository>().getArtist(widget.artistId).then((res) {
+        if (!mounted) return;
+        setState(() => _artist = res.fold((_) => null, (a) => a));
+      }).catchError((_) {});
+    } catch (_) {
+      // DI not available (e.g. widget tests) — show the generic fallback.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).primaryColor;
+    final name = _artist?.name ?? 'Tatuador';
+    final image = avatarImage(_artist?.imageUrl);
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: widget.onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: primary.withValues(alpha: 0.1),
+              backgroundImage: image,
+              child: image == null
+                  ? const Icon(Icons.person, size: 20)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Feito por',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              'Ver perfil',
+              style: TextStyle(
+                  fontSize: 13,
+                  color: primary,
+                  fontWeight: FontWeight.w600),
+            ),
+            Icon(Icons.chevron_right, color: primary),
+          ],
         ),
       ),
     );

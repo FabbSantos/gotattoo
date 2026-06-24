@@ -15,20 +15,12 @@ abstract class Brand {
   /// Preto GoTattoo (splash / dark surfaces).
   static const Color black = Color(0xFF1C1C1C);
 
-  /// Playfair Display — the elegant display serif used for the wordmark and
-  /// big headings. Body text stays on the default sans for readability.
+  /// Poppins — a clean, modern geometric sans used for the wordmark and big
+  /// headings. Body text stays on the default sans for readability.
   static TextStyle wordmark(TextStyle base) =>
-      GoogleFonts.playfairDisplay(textStyle: base);
+      GoogleFonts.poppins(textStyle: base, fontWeight: FontWeight.w700);
 
-  /// Applies Playfair Display to the large/heading slots of a [TextTheme],
-  /// leaving the body styles untouched.
+  /// Applies Poppins across the whole [TextTheme] for a cohesive, modern feel.
   static TextTheme display(TextTheme base) =>
-      GoogleFonts.playfairDisplayTextTheme(base).copyWith(
-        bodyLarge: base.bodyLarge,
-        bodyMedium: base.bodyMedium,
-        bodySmall: base.bodySmall,
-        labelLarge: base.labelLarge,
-        labelMedium: base.labelMedium,
-        labelSmall: base.labelSmall,
-      );
+      GoogleFonts.poppinsTextTheme(base);
 }

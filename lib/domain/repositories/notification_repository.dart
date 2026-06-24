@@ -7,6 +7,9 @@ abstract class NotificationRepository {
   /// Mark every unread notification of [userId] as read.
   Future<void> markAllRead(String userId);
 
+  /// Delete every notification of [userId].
+  Future<void> clearAll(String userId);
+
   /// Emits each new notification inserted for [userId] in realtime.
   Stream<AppNotification> stream(String userId);
 }

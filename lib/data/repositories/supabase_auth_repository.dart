@@ -33,6 +33,7 @@ class SupabaseAuthRepository implements AuthRepository {
       avatarPath: map['avatar_url'] as String?,
       latitude: (map['latitude'] as num?)?.toDouble(),
       longitude: (map['longitude'] as num?)?.toDouble(),
+      isOwner: map['is_owner'] as bool? ?? false,
     );
   }
 

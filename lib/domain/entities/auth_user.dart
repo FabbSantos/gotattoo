@@ -20,6 +20,9 @@ class AuthUser extends Equatable {
   final double? latitude;
   final double? longitude;
 
+  /// The app owner — badged with a "Dono" tag.
+  final bool isOwner;
+
   const AuthUser({
     required this.id,
     required this.name,
@@ -29,6 +32,7 @@ class AuthUser extends Equatable {
     this.avatarPath,
     this.latitude,
     this.longitude,
+    this.isOwner = false,
   });
 
   bool get isArtist => role == UserRole.artist;
@@ -45,6 +49,7 @@ class AuthUser extends Equatable {
     String? avatarPath,
     double? latitude,
     double? longitude,
+    bool? isOwner,
   }) {
     return AuthUser(
       id: id,
@@ -55,6 +60,7 @@ class AuthUser extends Equatable {
       avatarPath: avatarPath ?? this.avatarPath,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      isOwner: isOwner ?? this.isOwner,
     );
   }
 
@@ -67,6 +73,7 @@ class AuthUser extends Equatable {
     'avatarPath': avatarPath,
     'latitude': latitude,
     'longitude': longitude,
+    'isOwner': isOwner,
   };
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -79,6 +86,7 @@ class AuthUser extends Equatable {
       avatarPath: json['avatarPath'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
+      isOwner: json['isOwner'] as bool? ?? false,
     );
   }
 
@@ -92,5 +100,6 @@ class AuthUser extends Equatable {
     avatarPath,
     latitude,
     longitude,
+    isOwner,
   ];
 }

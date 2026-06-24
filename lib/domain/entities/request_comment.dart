@@ -9,6 +9,7 @@ class RequestComment extends Equatable {
   final String? authorAvatar;
   final String body;
   final bool authorIsArtist;
+  final bool authorIsOwner;
   final DateTime createdAt;
 
   const RequestComment({
@@ -20,6 +21,7 @@ class RequestComment extends Equatable {
     required this.createdAt,
     this.authorAvatar,
     this.authorIsArtist = false,
+    this.authorIsOwner = false,
   });
 
   @override
@@ -31,6 +33,7 @@ class RequestComment extends Equatable {
         authorAvatar,
         body,
         authorIsArtist,
+        authorIsOwner,
         createdAt,
       ];
 }

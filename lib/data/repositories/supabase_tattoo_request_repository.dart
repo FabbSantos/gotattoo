@@ -21,6 +21,7 @@ class SupabaseTattooRequestRepository implements TattooRequestRepository {
         budget: (r['budget'] as num?)?.toDouble(),
         status: r['status'] as String? ?? 'open',
         authorIsArtist: r['author_is_artist'] as bool? ?? false,
+        authorIsOwner: r['author_is_owner'] as bool? ?? false,
         sensitive: r['sensitive'] as bool? ?? false,
         likeCount: (r['like_count'] as num?)?.toInt() ?? 0,
         commentCount: (r['comment_count'] as num?)?.toInt() ?? 0,
@@ -35,6 +36,7 @@ class SupabaseTattooRequestRepository implements TattooRequestRepository {
         authorAvatar: r['author_avatar'] as String?,
         body: r['body'] as String? ?? '',
         authorIsArtist: r['author_is_artist'] as bool? ?? false,
+        authorIsOwner: r['author_is_owner'] as bool? ?? false,
         createdAt: DateTime.parse(r['created_at'] as String),
       );
 

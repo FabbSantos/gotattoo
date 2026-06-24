@@ -4,14 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection_container.dart';
 import '../../../core/utils/avatar_image.dart';
 import '../../../domain/entities/artist.dart';
+import '../../../domain/entities/product.dart';
 import '../../../domain/entities/review.dart';
 import '../../../domain/repositories/artist_repository.dart';
 import '../../../domain/repositories/chat_repository.dart';
+import '../../../domain/repositories/product_repository.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/review/reviews_cubit.dart';
+import '../../widgets/components/common/owner_tag.dart';
 import '../../widgets/components/review/review_dialog.dart';
 import '../../widgets/components/review/star_rating.dart';
 import '../chat/chat_page.dart';
+import '../user/product_detail_page.dart';
 
 /// Public artist profile: info + client reviews, with a quick "Avaliar" action.
 ///
@@ -155,12 +159,22 @@ class _ProfileView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          artist.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                artist.name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            if (artist.isOwner) ...[
+                              const SizedBox(width: 8),
+                              const OwnerTag(),
+                            ],
+                          ],
                         ),
                         Text(
                           '${artist.specialty}'
@@ -190,6 +204,13 @@ class _ProfileView extends StatelessWidget {
               ),
               const Divider(height: 32),
               const Text(
+                'Tatuagens deste artista',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              _ArtistTattoos(artistId: artist.id),
+              const Divider(height: 32),
+              const Text(
                 'Avaliações',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
@@ -213,6 +234,121 @@ class _ProfileView extends StatelessWidget {
                 ...state.reviews.map((r) => _ReviewTile(review: r)),
               const SizedBox(height: 80),
             ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Horizontal strip of the artist's tattoos (products), loaded once.
+class _ArtistTattoos extends StatefulWidget {
+  final String artistId;
+
+  const _ArtistTattoos({required this.artistId});
+
+  @override
+  State<_ArtistTattoos> createState() => _ArtistTattoosState();
+}
+
+class _ArtistTattoosState extends State<_ArtistTattoos> {
+  List<Product>? _items;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      sl<ProductRepository>().getProducts().then((res) {
+        if (!mounted) return;
+        setState(() {
+          _items = res.fold(
+            (_) => <Product>[],
+            (all) => all.where((p) => p.artistId == widget.artistId).toList(),
+          );
+        });
+      }).catchError((_) {
+        if (mounted) setState(() => _items = <Product>[]);
+      });
+    } catch (_) {
+      _items = <Product>[];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = _items;
+    if (items == null) {
+      return const SizedBox(
+        height: 150,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (items.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Text(
+          'Nenhuma tatuagem publicada ainda.',
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 170,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (context, i) {
+          final p = items[i];
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProductDetailPage(productId: p.id),
+              ),
+            ),
+            child: SizedBox(
+              width: 120,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      p.imageUrl,
+                      height: 120,
+                      width: 120,
+                      fit: BoxFit.cover,
+                      cacheWidth: 360,
+                      errorBuilder: (_, __, ___) => Container(
+                        height: 120,
+                        width: 120,
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.broken_image_outlined),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    p.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    'R\$ ${p.effectivePrice.toStringAsFixed(0)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         },
       ),

@@ -14,6 +14,7 @@ class TattooRequest extends Equatable {
   final double? budget;
   final String status; // open | closed
   final bool authorIsArtist;
+  final bool authorIsOwner;
   final bool sensitive;
   final int likeCount;
   final int commentCount;
@@ -33,6 +34,7 @@ class TattooRequest extends Equatable {
     this.budget,
     this.status = 'open',
     this.authorIsArtist = false,
+    this.authorIsOwner = false,
     this.sensitive = false,
     this.likeCount = 0,
     this.commentCount = 0,
@@ -51,6 +53,7 @@ class TattooRequest extends Equatable {
         budget: budget,
         status: status,
         authorIsArtist: authorIsArtist,
+        authorIsOwner: authorIsOwner,
         sensitive: sensitive,
         likeCount: likeCount ?? this.likeCount,
         commentCount: commentCount,
@@ -71,6 +74,7 @@ class TattooRequest extends Equatable {
         budget,
         status,
         authorIsArtist,
+        authorIsOwner,
         sensitive,
         likeCount,
         commentCount,

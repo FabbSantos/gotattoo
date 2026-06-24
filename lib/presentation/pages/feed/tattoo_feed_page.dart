@@ -8,6 +8,7 @@ import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/feed/tattoo_feed_cubit.dart';
 import '../../widgets/components/common/artist_tag.dart';
 import '../../widgets/components/common/feed_banner_ad.dart';
+import '../../widgets/components/common/owner_tag.dart';
 import '../../widgets/components/common/sensitive_image.dart';
 import 'create_request_page.dart';
 import 'request_detail_page.dart';
@@ -203,6 +204,10 @@ class _RequestCard extends StatelessWidget {
                                     color: Colors.grey[600], fontSize: 12),
                               ),
                             ),
+                            if (request.authorIsOwner) ...[
+                              const SizedBox(width: 6),
+                              const OwnerTag(),
+                            ],
                             if (request.authorIsArtist) ...[
                               const SizedBox(width: 6),
                               const ArtistTag(),

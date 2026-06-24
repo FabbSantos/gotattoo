@@ -41,6 +41,11 @@ class SupabaseNotificationRepository implements NotificationRepository {
   }
 
   @override
+  Future<void> clearAll(String userId) async {
+    await client.from('notifications').delete().eq('user_id', userId);
+  }
+
+  @override
   Stream<AppNotification> stream(String userId) {
     final controller = StreamController<AppNotification>();
     final channel = client.channel('public:notifications:$userId');
