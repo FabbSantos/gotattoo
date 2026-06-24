@@ -7,15 +7,12 @@ import '../../bloc/auth/auth_state.dart';
 import '../../bloc/product/product_bloc.dart';
 import '../../bloc/product/product_event.dart';
 import '../../bloc/product/product_state.dart';
-import '../../bloc/session/session_cubit.dart';
-import '../../bloc/session/session_state.dart';
 import '../user/edit_profile_page.dart';
 import 'artist_bookings_page.dart';
 import 'artist_location_page.dart';
 import 'artist_profile_page.dart';
 import 'availability_page.dart';
 import 'manage_tattoos_page.dart';
-import 'payout_account_page.dart';
 
 /// Home for the artist experience: estimated earnings, manage tattoos and the
 /// payout account.
@@ -100,27 +97,6 @@ class ArtistDashboardPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (_) => const ArtistLocationPage()),
               ),
-            ),
-            const SizedBox(height: 12),
-            BlocBuilder<SessionCubit, SessionState>(
-              builder: (context, state) {
-                return _DashboardCard(
-                  icon: Icons.account_balance_wallet,
-                  title: 'Conta de Recebimento',
-                  subtitle: state.hasPayoutAccount
-                      ? 'PayPal: ${state.payoutAccount!.identifier}'
-                      : 'Cadastre como você quer receber',
-                  trailing: state.hasPayoutAccount
-                      ? const Icon(Icons.check_circle, color: Colors.green)
-                      : const Icon(Icons.warning_amber, color: Colors.orange),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PayoutAccountPage(),
-                    ),
-                  ),
-                );
-              },
             ),
             const SizedBox(height: 24),
             Container(
@@ -349,7 +325,6 @@ class _DashboardCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Widget? trailing;
   final VoidCallback onTap;
 
   const _DashboardCard({
@@ -357,7 +332,6 @@ class _DashboardCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.trailing,
   });
 
   @override
@@ -376,7 +350,7 @@ class _DashboardCard extends StatelessWidget {
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
-        trailing: trailing ?? const Icon(Icons.chevron_right),
+        trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
       ),
     );

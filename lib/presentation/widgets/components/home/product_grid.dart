@@ -44,11 +44,27 @@ class ProductGrid extends StatelessWidget {
                     ? ' na categoria ${state.selectedCategory}'
                     : '';
             return SliverFillRemaining(
-              child: Center(
-                child: Text(
-                  'Nenhuma tatuagem encontrada$byCategory$byArtist',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Nenhuma tatuagem encontrada$byCategory$byArtist',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 24),
+                    // Still surface an ad so the screen isn't fully empty.
+                    SizedBox(
+                      width: 190,
+                      child: AspectRatio(
+                        aspectRatio: 0.62,
+                        child: _shell(const NativeAdCard()),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
