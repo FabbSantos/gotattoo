@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection_container.dart';
 import '../../bloc/auth/auth_cubit.dart';
+import '../../bloc/auth/auth_state.dart';
 import '../../bloc/product/product_bloc.dart';
 import '../../bloc/product/product_event.dart';
 import '../../bloc/product/product_state.dart';
 import '../../bloc/session/session_cubit.dart';
 import '../../bloc/session/session_state.dart';
+import '../user/edit_profile_page.dart';
 import 'artist_bookings_page.dart';
 import 'artist_location_page.dart';
 import 'artist_profile_page.dart';
@@ -31,6 +33,7 @@ class ArtistDashboardPage extends StatelessWidget {
         body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            _OnboardingChecklist(artistId: artistId),
             const _RevenueSummary(),
             const SizedBox(height: 16),
             // Builder gives a context under the BlocProvider, so we can refresh
@@ -212,6 +215,132 @@ class _RevenueSummary extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Step-by-step shown to a freshly approved artist until their profile is set
+/// up (photo, location, first tattoo). Disappears once all three are done.
+class _OnboardingChecklist extends StatelessWidget {
+  final String? artistId;
+
+  const _OnboardingChecklist({this.artistId});
+
+  Future<void> _open(
+    BuildContext context,
+    Widget page, {
+    bool refreshProducts = false,
+  }) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+    if (refreshProducts && context.mounted) {
+      context.read<ProductBloc>().add(GetProductsEvent(artistId: artistId));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).primaryColor;
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, auth) {
+        final user = auth.user;
+        final hasPhoto = (user?.avatarPath ?? '').isNotEmpty;
+        final hasLocation = user?.hasLocation ?? false;
+        return BlocBuilder<ProductBloc, ProductState>(
+          builder: (context, prod) {
+            // Wait for products to load before judging the tattoo step.
+            if (prod is! ProductsLoaded) return const SizedBox.shrink();
+            final hasTattoo = prod.products.isNotEmpty;
+            if (hasPhoto && hasLocation && hasTattoo) {
+              return const SizedBox.shrink();
+            }
+            final done = [hasPhoto, hasLocation, hasTattoo]
+                .where((b) => b)
+                .length;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: primary.withValues(alpha: 0.2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text('🚀', style: TextStyle(fontSize: 18)),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'Comece por aqui',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                      Text('$done/3',
+                          style: TextStyle(color: Colors.grey[600])),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Deixe seu perfil pronto pros clientes te acharem.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 8),
+                  _step(context, 'Adicione uma foto de perfil', hasPhoto,
+                      () => _open(context, const EditProfilePage())),
+                  _step(context, 'Defina sua localização', hasLocation,
+                      () => _open(context, const ArtistLocationPage())),
+                  _step(
+                    context,
+                    'Cadastre sua primeira tatuagem',
+                    hasTattoo,
+                    () => _open(context, const ManageTattoosPage(),
+                        refreshProducts: true),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _step(
+    BuildContext context,
+    String label,
+    bool done,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: done ? null : onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Icon(
+              done ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: done ? Colors.green : Theme.of(context).primaryColor,
+              size: 22,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  decoration: done ? TextDecoration.lineThrough : null,
+                  color: done ? Colors.grey[500] : Colors.black87,
+                ),
+              ),
+            ),
+            if (!done) Icon(Icons.chevron_right, color: Colors.grey[400]),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -11,6 +11,7 @@ abstract class AuthRepository {
     required String email,
     required String password,
     required UserRole role,
+    String? portfolio,
   });
 
   Future<AuthUser> login({required String email, required String password});
@@ -25,6 +26,7 @@ abstract class AuthRepository {
     String? avatarPath,
     double? latitude,
     double? longitude,
+    String? portfolio,
   });
 
   Future<void> logout();

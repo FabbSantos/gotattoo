@@ -20,6 +20,9 @@ class Artist extends Equatable {
   /// The app owner — badged with a "Dono" tag.
   final bool isOwner;
 
+  /// Portfolio link (Instagram/site/...).
+  final String portfolio;
+
   const Artist({
     required this.id,
     required this.name,
@@ -31,6 +34,7 @@ class Artist extends Equatable {
     this.longitude,
     this.featured = false,
     this.isOwner = false,
+    this.portfolio = '',
   });
 
   bool get isRated => rating > 0;
@@ -52,5 +56,6 @@ class Artist extends Equatable {
     longitude,
     featured,
     isOwner,
+    portfolio,
   ];
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection_container.dart';
 import '../../../core/utils/avatar_image.dart';
+import '../../../core/utils/url_opener.dart';
 import '../../../domain/entities/artist.dart';
 import '../../../domain/entities/product.dart';
 import '../../../domain/entities/review.dart';
@@ -202,6 +203,30 @@ class _ProfileView extends StatelessWidget {
                   ),
                 ],
               ),
+              if (artist.portfolio.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                InkWell(
+                  onTap: () => openUrl(artist.portfolio),
+                  child: Row(
+                    children: [
+                      Icon(Icons.link,
+                          size: 18, color: Theme.of(context).primaryColor),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          artist.portfolio,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const Divider(height: 32),
               const Text(
                 'Tatuagens deste artista',

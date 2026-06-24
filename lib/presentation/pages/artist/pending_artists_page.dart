@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/di/injection_container.dart';
 import '../../../core/utils/avatar_image.dart';
+import '../../../core/utils/url_opener.dart';
 import '../../../domain/entities/artist.dart';
 import '../../../domain/repositories/artist_repository.dart';
 import 'artist_profile_page.dart';
@@ -128,6 +129,32 @@ class _PendingArtistsPageState extends State<PendingArtistsPage> {
                 label: const Text('Ver'),
               ),
             ),
+            if (a.portfolio.isNotEmpty)
+              InkWell(
+                onTap: () => openUrl(a.portfolio),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Icon(Icons.link,
+                          size: 16, color: Theme.of(context).primaryColor),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          a.portfolio,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             const SizedBox(height: 4),
             Row(
               children: [

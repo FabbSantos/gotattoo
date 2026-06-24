@@ -81,6 +81,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required UserRole role,
+    String? portfolio,
   }) async {
     final key = email.trim().toLowerCase();
     final users = _readUsers();
@@ -92,6 +93,7 @@ class AuthRepositoryImpl implements AuthRepository {
       name: name,
       email: key,
       role: role,
+      portfolio: portfolio ?? '',
     );
     users[key] = {'password': password, 'user': user.toJson()};
     await _writeUsers(users);
@@ -126,6 +128,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String? avatarPath,
     double? latitude,
     double? longitude,
+    String? portfolio,
   }) async {
     final email = prefs.getString(_currentKey);
     final users = _readUsers();
@@ -140,6 +143,7 @@ class AuthRepositoryImpl implements AuthRepository {
       avatarPath: avatarPath,
       latitude: latitude,
       longitude: longitude,
+      portfolio: portfolio,
     );
     users[email] = {'password': record['password'], 'user': updated.toJson()};
     await _writeUsers(users);

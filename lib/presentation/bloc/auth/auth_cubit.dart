@@ -48,6 +48,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String email,
     required String password,
     required UserRole role,
+    String? portfolio,
   }) async {
     emit(state.copyWith(submitting: true, error: null));
     try {
@@ -56,6 +57,7 @@ class AuthCubit extends Cubit<AuthState> {
         email: email,
         password: password,
         role: role,
+        portfolio: portfolio,
       );
       emit(AuthState(status: AuthStatus.authenticated, user: user));
     } on AuthException catch (e) {
@@ -69,6 +71,7 @@ class AuthCubit extends Cubit<AuthState> {
     String? avatarPath,
     double? latitude,
     double? longitude,
+    String? portfolio,
   }) async {
     final user = await repository.updateProfile(
       name: name,
@@ -76,6 +79,7 @@ class AuthCubit extends Cubit<AuthState> {
       avatarPath: avatarPath,
       latitude: latitude,
       longitude: longitude,
+      portfolio: portfolio,
     );
     emit(state.copyWith(status: AuthStatus.authenticated, user: user));
   }

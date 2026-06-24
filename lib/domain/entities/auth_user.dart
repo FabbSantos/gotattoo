@@ -26,6 +26,9 @@ class AuthUser extends Equatable {
   /// Artist application state: 'none' | 'pending' | 'approved' | 'rejected'.
   final String artistStatus;
 
+  /// Artist portfolio link (Instagram/site/...), given at sign-up.
+  final String portfolio;
+
   const AuthUser({
     required this.id,
     required this.name,
@@ -37,6 +40,7 @@ class AuthUser extends Equatable {
     this.longitude,
     this.isOwner = false,
     this.artistStatus = 'none',
+    this.portfolio = '',
   });
 
   bool get isArtist => role == UserRole.artist;
@@ -58,6 +62,7 @@ class AuthUser extends Equatable {
     double? longitude,
     bool? isOwner,
     String? artistStatus,
+    String? portfolio,
   }) {
     return AuthUser(
       id: id,
@@ -70,6 +75,7 @@ class AuthUser extends Equatable {
       longitude: longitude ?? this.longitude,
       isOwner: isOwner ?? this.isOwner,
       artistStatus: artistStatus ?? this.artistStatus,
+      portfolio: portfolio ?? this.portfolio,
     );
   }
 
@@ -84,6 +90,7 @@ class AuthUser extends Equatable {
     'longitude': longitude,
     'isOwner': isOwner,
     'artistStatus': artistStatus,
+    'portfolio': portfolio,
   };
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -98,6 +105,7 @@ class AuthUser extends Equatable {
       longitude: (json['longitude'] as num?)?.toDouble(),
       isOwner: json['isOwner'] as bool? ?? false,
       artistStatus: json['artistStatus'] as String? ?? 'none',
+      portfolio: json['portfolio'] as String? ?? '',
     );
   }
 
@@ -113,5 +121,6 @@ class AuthUser extends Equatable {
     longitude,
     isOwner,
     artistStatus,
+    portfolio,
   ];
 }

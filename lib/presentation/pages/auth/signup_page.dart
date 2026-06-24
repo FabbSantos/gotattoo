@@ -17,6 +17,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _portfolioController = TextEditingController();
   UserRole _role = UserRole.client;
   bool _obscure = true;
 
@@ -25,6 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _portfolioController.dispose();
     super.dispose();
   }
 
@@ -35,6 +37,8 @@ class _SignUpPageState extends State<SignUpPage> {
       email: _emailController.text,
       password: _passwordController.text,
       role: _role,
+      portfolio:
+          _role == UserRole.artist ? _portfolioController.text.trim() : null,
     );
   }
 
@@ -112,7 +116,24 @@ class _SignUpPageState extends State<SignUpPage> {
                   onSelectionChanged: (selection) =>
                       setState(() => _role = selection.first),
                 ),
-                if (_role == UserRole.artist)
+                if (_role == UserRole.artist) ...[
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _portfolioController,
+                    keyboardType: TextInputType.url,
+                    decoration: const InputDecoration(
+                      labelText: 'Link do portfólio',
+                      hintText: 'Instagram, site, Behance...',
+                      prefixIcon: Icon(Icons.link),
+                    ),
+                    validator: (v) {
+                      if (_role != UserRole.artist) return null;
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Informe um link do seu trabalho';
+                      }
+                      return null;
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Row(
@@ -122,8 +143,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            'Contas de tatuador passam por aprovação. Você entra '
-                            'como cliente e é avisado quando for aprovado.',
+                            'Contas de tatuador passam por aprovação. O portfólio '
+                            'ajuda o GoTattoo a te aprovar. Você entra como '
+                            'cliente e é avisado quando for aprovado.',
                             style: TextStyle(
                                 fontSize: 12, color: Colors.grey[600]),
                           ),
@@ -131,6 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ],
                     ),
                   ),
+                ],
                 const SizedBox(height: 24),
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {
