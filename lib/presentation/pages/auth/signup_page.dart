@@ -112,6 +112,25 @@ class _SignUpPageState extends State<SignUpPage> {
                   onSelectionChanged: (selection) =>
                       setState(() => _role = selection.first),
                 ),
+                if (_role == UserRole.artist)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline,
+                            size: 16, color: Colors.grey[600]),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'Contas de tatuador passam por aprovação. Você entra '
+                            'como cliente e é avisado quando for aprovado.',
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey[600]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 const SizedBox(height: 24),
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {

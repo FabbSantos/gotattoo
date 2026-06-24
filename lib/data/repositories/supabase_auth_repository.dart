@@ -34,6 +34,7 @@ class SupabaseAuthRepository implements AuthRepository {
       latitude: (map['latitude'] as num?)?.toDouble(),
       longitude: (map['longitude'] as num?)?.toDouble(),
       isOwner: map['is_owner'] as bool? ?? false,
+      artistStatus: map['artist_status'] as String? ?? 'none',
     );
   }
 
@@ -61,7 +62,8 @@ class SupabaseAuthRepository implements AuthRepository {
       if (user == null) {
         throw const AuthException('Não foi possível criar a conta.');
       }
-      return AuthUser(id: user.id, name: name, email: email.trim(), role: role);
+      // Read the profile the trigger created: artists join as pending clients.
+      return _toUser(user);
     } on sb.AuthException catch (e) {
       throw AuthException(e.message);
     }

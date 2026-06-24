@@ -33,4 +33,16 @@ class ArtistRepositoryImpl implements ArtistRepository {
   Future<Either<Failure, Artist>> getArtist(String id) {
     return _guard(() => localDataSource.getArtist(id));
   }
+
+  @override
+  Future<Either<Failure, List<Artist>>> getPendingArtists() async =>
+      const Right([]);
+
+  @override
+  Future<Either<Failure, void>> approveArtist(String id) async =>
+      const Right(null);
+
+  @override
+  Future<Either<Failure, void>> rejectArtist(String id) async =>
+      const Right(null);
 }

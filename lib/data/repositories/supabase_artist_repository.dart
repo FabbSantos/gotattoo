@@ -53,4 +53,38 @@ class SupabaseArtistRepository implements ArtistRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Artist>>> getPendingArtists() async {
+    try {
+      final rows = await client
+          .from('profiles')
+          .select()
+          .eq('artist_status', 'pending')
+          .order('created_at', ascending: false);
+      return Right(rows.map((r) => _toArtist(r)).toList());
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> approveArtist(String id) async {
+    try {
+      await client.rpc('approve_artist', params: {'p_id': id});
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> rejectArtist(String id) async {
+    try {
+      await client.rpc('reject_artist', params: {'p_id': id});
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

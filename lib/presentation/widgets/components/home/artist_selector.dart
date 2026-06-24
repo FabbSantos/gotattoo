@@ -78,6 +78,43 @@ class ArtistSelector extends StatelessWidget {
     );
   }
 
+  /// Shown when there are no artists at all yet (fresh app): an example avatar
+  /// plus a nudge to invite tattoo artists.
+  Widget _emptyExample(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Row(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 54,
+                width: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey[200],
+                  border: Border.all(color: Colors.grey[300]!, width: 2),
+                ),
+                child: Icon(Icons.brush, color: Colors.grey[400], size: 26),
+              ),
+              const SizedBox(height: 6),
+              Text('Exemplo',
+                  style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+            ],
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              'Ainda não há tatuadores por aqui.\nConvide tatuadores pra começar!',
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   double? _distanceTo(Artist a) {
     if (!_hasLocation || !a.hasLocation) return null;
     return LocationService.distanceKm(
@@ -133,6 +170,11 @@ class ArtistSelector extends StatelessWidget {
                         return _distanceTo(a)!.compareTo(_distanceTo(b)!);
                       });
                   }
+                  // No artists at all in the DB (fresh app) → example/placeholder.
+                  if (state.artists.isEmpty) {
+                    return _emptyExample(context);
+                  }
+                  // Artists exist, just none within the nearby radius.
                   if (artists.isEmpty) {
                     return const Center(
                       child: Text(

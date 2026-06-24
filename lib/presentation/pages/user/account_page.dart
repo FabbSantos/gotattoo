@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/di/injection_container.dart';
 import '../../../core/services/payment_service.dart';
@@ -9,6 +11,7 @@ import '../../bloc/auth/auth_state.dart';
 import '../../widgets/components/common/owner_tag.dart';
 import '../artist/artist_dashboard_page.dart';
 import '../artist/artist_profile_page.dart';
+import '../artist/pending_artists_page.dart';
 import '../booking/my_bookings_page.dart';
 import 'edit_profile_page.dart';
 import 'payment_methods_page.dart';
@@ -73,6 +76,29 @@ class AccountPage extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ),
+              if (user?.isArtistPending ?? false)
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.hourglass_top, color: Color(0xFFB8860B)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Seu cadastro de tatuador está em análise. '
+                          'Você será avisado quando for aprovado.',
+                          style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               const SizedBox(height: 24),
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
@@ -124,6 +150,31 @@ class AccountPage extends StatelessWidget {
                   ),
                 ),
               ],
+              if (user?.isOwner ?? false)
+                ListTile(
+                  leading: const Icon(Icons.how_to_reg_outlined),
+                  title: const Text('Pedidos de tatuador'),
+                  subtitle: const Text('Aprovar quem quer ser tatuador'),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PendingArtistsPage(),
+                    ),
+                  ),
+                ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.person_add_alt_1_outlined),
+                title: const Text('Convidar tatuadores'),
+                subtitle: const Text('Chame tatuadores e amigos pro app'),
+                onTap: _invite,
+              ),
+              ListTile(
+                leading: const Icon(Icons.star_outline),
+                title: const Text('Avaliar o app'),
+                subtitle: const Text('Curtindo? Deixe uma nota na loja 💜'),
+                onTap: _rate,
+              ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
@@ -137,4 +188,21 @@ class AccountPage extends StatelessWidget {
     );
   }
 
+  Future<void> _invite() async {
+    await Share.share(
+      'Tô no GoTattoo — pra achar tatuador, ver trabalhos e agendar. '
+      'Vem também! E se você é tatuador, crie sua conta e mostre seu '
+      'trabalho pra galera. 💉',
+      subject: 'Vem pro GoTattoo',
+    );
+  }
+
+  Future<void> _rate() async {
+    final review = InAppReview.instance;
+    if (await review.isAvailable()) {
+      await review.requestReview();
+    } else {
+      await review.openStoreListing();
+    }
+  }
 }

@@ -80,6 +80,16 @@ class AuthCubit extends Cubit<AuthState> {
     emit(state.copyWith(status: AuthStatus.authenticated, user: user));
   }
 
+  /// Re-fetch the signed-in user (e.g. after the owner approves an artist, so
+  /// the new 'artist' role takes effect without a re-login).
+  Future<void> refresh() async {
+    if (state.status != AuthStatus.authenticated) return;
+    final user = await repository.currentUser();
+    if (user != null) {
+      emit(state.copyWith(status: AuthStatus.authenticated, user: user));
+    }
+  }
+
   Future<void> logout() async {
     await repository.logout();
     emit(const AuthState(status: AuthStatus.unauthenticated));

@@ -23,6 +23,9 @@ class AuthUser extends Equatable {
   /// The app owner — badged with a "Dono" tag.
   final bool isOwner;
 
+  /// Artist application state: 'none' | 'pending' | 'approved' | 'rejected'.
+  final String artistStatus;
+
   const AuthUser({
     required this.id,
     required this.name,
@@ -33,9 +36,13 @@ class AuthUser extends Equatable {
     this.latitude,
     this.longitude,
     this.isOwner = false,
+    this.artistStatus = 'none',
   });
 
   bool get isArtist => role == UserRole.artist;
+
+  /// Asked to be an artist and still awaiting the owner's decision.
+  bool get isArtistPending => artistStatus == 'pending';
 
   bool get hasLocation => latitude != null && longitude != null;
 
@@ -50,6 +57,7 @@ class AuthUser extends Equatable {
     double? latitude,
     double? longitude,
     bool? isOwner,
+    String? artistStatus,
   }) {
     return AuthUser(
       id: id,
@@ -61,6 +69,7 @@ class AuthUser extends Equatable {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       isOwner: isOwner ?? this.isOwner,
+      artistStatus: artistStatus ?? this.artistStatus,
     );
   }
 
@@ -74,6 +83,7 @@ class AuthUser extends Equatable {
     'latitude': latitude,
     'longitude': longitude,
     'isOwner': isOwner,
+    'artistStatus': artistStatus,
   };
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -87,6 +97,7 @@ class AuthUser extends Equatable {
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       isOwner: json['isOwner'] as bool? ?? false,
+      artistStatus: json['artistStatus'] as String? ?? 'none',
     );
   }
 
@@ -101,5 +112,6 @@ class AuthUser extends Equatable {
     latitude,
     longitude,
     isOwner,
+    artistStatus,
   ];
 }

@@ -4,10 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/app_notification.dart';
 import '../../bloc/notification/notifications_cubit.dart';
 import '../../bloc/notification/notifications_state.dart';
+import '../../bloc/auth/auth_cubit.dart';
 import '../artist/artist_bookings_page.dart';
+import '../artist/pending_artists_page.dart';
 import '../booking/my_bookings_page.dart';
 import '../chat/conversations_page.dart';
 import '../feed/tattoo_feed_page.dart';
+import '../user/account_page.dart';
 
 /// Lists the user's booking notifications. Opening the page marks everything as
 /// read; tapping a row jumps to the relevant bookings screen.
@@ -34,6 +37,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
       dest = const ConversationsPage();
     } else if (n.type == 'request_comment') {
       dest = const TattooFeedPage();
+    } else if (n.type == 'artist_request') {
+      dest = const PendingArtistsPage();
+    } else if (n.type == 'artist_approved' || n.type == 'artist_rejected') {
+      // Re-sync so a freshly approved artist gets their new role right away.
+      context.read<AuthCubit>().refresh();
+      dest = const AccountPage();
     } else if (n.type == 'payment_charged' || n.type == 'payment_refunded') {
       dest = const MyBookingsPage();
     } else if (n.isForArtist) {
@@ -156,6 +165,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return Icons.chat_bubble_outline;
       case 'request_comment':
         return Icons.lightbulb_outline;
+      case 'artist_request':
+        return Icons.how_to_reg_outlined;
+      case 'artist_approved':
+        return Icons.verified_outlined;
+      case 'artist_rejected':
+        return Icons.cancel_outlined;
       case 'payment_charged':
         return Icons.payments_outlined;
       case 'payment_refunded':

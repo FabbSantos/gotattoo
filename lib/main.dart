@@ -15,6 +15,7 @@ import 'core/services/payment_service.dart';
 import 'core/services/push_service.dart';
 import 'presentation/bloc/chat/conversations_cubit.dart';
 import 'presentation/bloc/notification/notifications_cubit.dart';
+import 'presentation/bloc/notification/notifications_state.dart';
 import 'presentation/pages/onboarding/onboarding_page.dart';
 import 'presentation/bloc/artist/artist_bloc.dart';
 import 'presentation/bloc/artist/artist_event.dart';
@@ -80,7 +81,7 @@ class MyApp extends StatelessWidget {
           ),
           primaryColor: Brand.red,
           scaffoldBackgroundColor: Colors.white,
-          // Playfair Display on the display/heading slots; body stays sans.
+          // Poppins across the text theme for a clean, modern feel.
           textTheme: Brand.display(ThemeData.light().textTheme),
         ),
         debugShowCheckedModeBanner: false,
@@ -100,9 +101,30 @@ class _AuthGate extends StatefulWidget {
   State<_AuthGate> createState() => _AuthGateState();
 }
 
-class _AuthGateState extends State<_AuthGate> {
+class _AuthGateState extends State<_AuthGate> with WidgetsBindingObserver {
   late bool _onboardingSeen =
       sl<SharedPreferences>().getBool(kOnboardingSeenKey) ?? false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Coming back to the app re-syncs the user, so a freshly approved artist
+    // picks up their new role without a re-login.
+    if (state == AppLifecycleState.resumed) {
+      context.read<AuthCubit>().refresh();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +133,14 @@ class _AuthGateState extends State<_AuthGate> {
         onDone: () => setState(() => _onboardingSeen = true),
       );
     }
-    return BlocConsumer<AuthCubit, AuthState>(
+    return BlocListener<NotificationsCubit, NotificationsState>(
+      // An incoming "approved" notification flips the user to artist live.
+      listenWhen: (prev, curr) =>
+          curr.items.isNotEmpty &&
+          curr.items.first.type == 'artist_approved' &&
+          (prev.items.isEmpty || prev.items.first.id != curr.items.first.id),
+      listener: (context, _) => context.read<AuthCubit>().refresh(),
+      child: BlocConsumer<AuthCubit, AuthState>(
       listenWhen: (prev, curr) => prev.status != curr.status,
       listener: (context, state) {
         // Start/stop notification tracking as the session changes.
@@ -141,6 +170,7 @@ class _AuthGateState extends State<_AuthGate> {
             return const SplashScreen();
         }
       },
+      ),
     );
   }
 }
