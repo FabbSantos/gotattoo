@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 
@@ -8,6 +11,7 @@ import 'core/constants/brand.dart';
 import 'core/di/injection_container.dart';
 import 'core/route_observer.dart';
 import 'core/services/local_notifications_service.dart';
+import 'core/services/payment_service.dart';
 import 'core/services/push_service.dart';
 import 'presentation/bloc/chat/conversations_cubit.dart';
 import 'presentation/bloc/notification/notifications_cubit.dart';
@@ -36,8 +40,11 @@ Future<void> main() async {
     );
   }
   await initDependencies();
+  // Best-effort: ads are passive — ignore any init failure.
+  unawaited(MobileAds.instance.initialize());
   await sl<LocalNotificationsService>().init();
   await sl<PushService>().init();
+  await sl<PaymentService>().init();
   runApp(const MyApp());
 }
 

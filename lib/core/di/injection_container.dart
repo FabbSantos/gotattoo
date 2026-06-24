@@ -6,16 +6,21 @@ import '../cache/cache_store.dart';
 import '../config/supabase_config.dart';
 import '../services/local_notifications_service.dart';
 import '../services/location_service.dart';
+import '../services/payment_service.dart';
 import '../services/push_service.dart';
 import '../utils/credential_store.dart';
 import '../../data/repositories/local_notification_repository.dart';
 import '../../data/repositories/supabase_notification_repository.dart';
 import '../../data/repositories/local_chat_repository.dart';
 import '../../data/repositories/supabase_chat_repository.dart';
+import '../../data/repositories/local_tattoo_request_repository.dart';
+import '../../data/repositories/supabase_tattoo_request_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/repositories/chat_repository.dart';
+import '../../domain/repositories/tattoo_request_repository.dart';
 import '../../presentation/bloc/notification/notifications_cubit.dart';
 import '../../presentation/bloc/chat/conversations_cubit.dart';
+import '../../presentation/bloc/feed/tattoo_feed_cubit.dart';
 import '../../data/repositories/supabase_auth_repository.dart';
 import '../../data/repositories/supabase_artist_repository.dart';
 import '../../data/repositories/supabase_availability_repository.dart';
@@ -81,6 +86,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => LocationService());
   sl.registerLazySingleton(() => LocalNotificationsService());
   sl.registerLazySingleton(() => PushService(sl()));
+  sl.registerLazySingleton(() => PaymentService());
 
   // Blocs — new instance per injection (UI owns their lifecycle).
   sl.registerFactory(
@@ -112,6 +118,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(
     () => ConversationsCubit(repository: sl(), cache: sl()),
   );
+  sl.registerFactory(() => TattooFeedCubit(repository: sl()));
 
   // Use cases.
   sl.registerLazySingleton(() => GetProducts(sl()));
@@ -163,6 +170,9 @@ Future<void> initDependencies() async {
     sl.registerLazySingleton<ChatRepository>(
       () => SupabaseChatRepository(client),
     );
+    sl.registerLazySingleton<TattooRequestRepository>(
+      () => SupabaseTattooRequestRepository(client),
+    );
   } else {
     // Offline mode: local mock data + auth seeded with demo artist accounts.
     final authRepository = AuthRepositoryImpl(prefs: prefs);
@@ -194,6 +204,9 @@ Future<void> initDependencies() async {
     );
     sl.registerLazySingleton<ChatRepository>(
       () => LocalChatRepository(),
+    );
+    sl.registerLazySingleton<TattooRequestRepository>(
+      () => LocalTattooRequestRepository(),
     );
   }
 

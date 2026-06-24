@@ -115,6 +115,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<AuthUser> signInWithGoogle() async {
+    throw const AuthException('Login com Google indisponível no modo offline.');
+  }
+
+  @override
   Future<AuthUser> updateProfile({
     String? name,
     String? nickname,

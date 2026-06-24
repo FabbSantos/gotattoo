@@ -69,6 +69,8 @@ class _ProductCardState extends State<ProductCard>
                       child: Image.network(
                         widget.product.imageUrl,
                         fit: BoxFit.cover,
+                        // Decode at a smaller size → smoother grid scrolling.
+                        cacheWidth: 500,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Container(

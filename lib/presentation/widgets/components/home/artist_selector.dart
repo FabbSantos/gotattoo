@@ -75,8 +75,13 @@ class ArtistSelector extends StatelessWidget {
                             a.hasLocation &&
                             _distanceTo(a)! <= _nearbyRadiusKm)
                         .toList()
-                      ..sort((a, b) =>
-                          _distanceTo(a)!.compareTo(_distanceTo(b)!));
+                      // Featured first, then nearest.
+                      ..sort((a, b) {
+                        if (a.featured != b.featured) {
+                          return a.featured ? -1 : 1;
+                        }
+                        return _distanceTo(a)!.compareTo(_distanceTo(b)!);
+                      });
                   }
                   if (artists.isEmpty) {
                     return const Center(
@@ -156,6 +161,23 @@ class ArtistSelector extends StatelessWidget {
                                           Icons.check,
                                           color: Colors.white,
                                           size: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  if (artist.featured)
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.amber,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.star,
+                                          color: Colors.white,
+                                          size: 12,
                                         ),
                                       ),
                                     ),

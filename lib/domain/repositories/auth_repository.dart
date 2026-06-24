@@ -15,6 +15,9 @@ abstract class AuthRepository {
 
   Future<AuthUser> login({required String email, required String password});
 
+  /// Sign in with Google (native flow → Supabase ID-token exchange).
+  Future<AuthUser> signInWithGoogle();
+
   /// Updates the current user's editable profile fields and returns the result.
   Future<AuthUser> updateProfile({
     String? name,

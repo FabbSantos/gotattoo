@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/payment_service.dart';
 import '../../../../domain/entities/booking.dart';
 import '../../../../domain/entities/booking_status.dart';
 
@@ -33,6 +35,41 @@ class BookingCard extends StatelessWidget {
       case BookingStatus.pending:
         return Colors.grey;
     }
+  }
+
+  /// Real payment state from Stripe when available, otherwise the status-derived
+  /// (simulated) label.
+  Widget _paymentBadge() {
+    ({String label, Color color, IconData icon})? real;
+    if (booking.isPaid) {
+      real = (label: 'Pago', color: Colors.green, icon: Icons.check_circle);
+    } else if (booking.isRefunded) {
+      real = (label: 'Reembolsado', color: Colors.grey, icon: Icons.replay);
+    } else if (booking.paymentFailed) {
+      real = (label: 'Falha no pagamento', color: Colors.red, icon: Icons.error_outline);
+    }
+
+    if (real == null) {
+      return Text(
+        booking.status.paymentLabel,
+        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+      );
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(real.icon, size: 13, color: real.color),
+        const SizedBox(width: 3),
+        Text(
+          real.label,
+          style: TextStyle(
+            color: real.color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -97,11 +134,12 @@ class BookingCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  booking.status.paymentLabel,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
+                // Payment state is only meaningful with in-app payments on;
+                // in the P2P model the money is handled off-app.
+                if (sl<PaymentService>().isConfigured) ...[
+                  const SizedBox(width: 8),
+                  _paymentBadge(),
+                ],
               ],
             ),
             if (actions.isNotEmpty) ...[

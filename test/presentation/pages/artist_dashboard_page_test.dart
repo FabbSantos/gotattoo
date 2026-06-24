@@ -56,13 +56,13 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('shows the net estimated revenue (97% of the catalog)', (
+  testWidgets('shows the gross estimated revenue (artist keeps 100%)', (
     tester,
   ) async {
     whenListen(
       productBloc,
       const Stream<ProductState>.empty(),
-      // 1200 + 350 = 1550 gross -> 97% = 1503.50 net, fee 46.50
+      // 1200 + 350 = 1550 gross; no platform fee in the P2P model.
       initialState: ProductsLoaded(
         const [tProduct, tProductMinimalist],
         selectedCategory: 'Todas',
@@ -72,8 +72,8 @@ void main() {
     await pumpDashboard(tester);
 
     expect(find.text('Faturamento estimado'), findsOneWidget);
-    expect(find.textContaining('1503.50'), findsOneWidget);
+    expect(find.textContaining('1550.00'), findsOneWidget);
     expect(find.textContaining('2 tatuagens'), findsOneWidget);
-    expect(find.textContaining('46.50'), findsOneWidget);
+    expect(find.textContaining('100%'), findsOneWidget);
   });
 }

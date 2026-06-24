@@ -48,6 +48,15 @@ class SupabaseChatRepository implements ChatRepository {
   }
 
   @override
+  Future<String> openWithClient(String clientId) async {
+    final res = await client.rpc(
+      'get_or_create_conversation_as_artist',
+      params: {'p_client_id': clientId},
+    );
+    return res as String;
+  }
+
+  @override
   Future<List<ChatMessage>> messages(String conversationId) async {
     final rows = await client
         .from('messages')

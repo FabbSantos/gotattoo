@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection_container.dart';
+import '../../../core/services/payment_service.dart';
 import '../../../domain/entities/booking.dart';
 import '../../../domain/entities/booking_status.dart';
 import '../../../domain/entities/review.dart';
@@ -74,8 +75,11 @@ class MyBookingsPage extends StatelessWidget {
     if (b.status.isCancellable) {
       return [
         OutlinedButton(
-          onPressed: () =>
-              cubit.updateStatus(b.id, BookingStatus.cancelled),
+          onPressed: () async {
+            // Refund if it was already charged (no-op otherwise).
+            await sl<PaymentService>().refundBooking(b.id);
+            await cubit.updateStatus(b.id, BookingStatus.cancelled);
+          },
           style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
           child: const Text('Cancelar'),
         ),

@@ -67,6 +67,7 @@ Map<String, dynamic> _artistToCache(Artist a) => {
       'region': a.region,
       'latitude': a.latitude,
       'longitude': a.longitude,
+      'featured': a.featured,
     };
 
 Artist _artistFromCache(Map<String, dynamic> m) => Artist(
@@ -78,4 +79,5 @@ Artist _artistFromCache(Map<String, dynamic> m) => Artist(
       region: m['region'] as String? ?? '',
       latitude: (m['latitude'] as num?)?.toDouble(),
       longitude: (m['longitude'] as num?)?.toDouble(),
+      featured: m['featured'] as bool? ?? false,
     );

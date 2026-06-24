@@ -40,6 +40,9 @@ class FakeChatRepository implements ChatRepository {
   Future<String> openWithArtist(String artistId) async => 'c1';
 
   @override
+  Future<String> openWithClient(String clientId) async => 'c1';
+
+  @override
   Future<List<Conversation>> conversations() async => const [];
 }
 

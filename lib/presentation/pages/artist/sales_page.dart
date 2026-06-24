@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/constants/platform_fee.dart';
 import '../../../domain/entities/order.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/orders/orders_cubit.dart';
 import '../../bloc/orders/orders_state.dart';
 
-/// The artist's sales: orders that include their tattoos, with the net amount
-/// (after the platform fee) they earned from each.
+/// The artist's sales: orders that include their tattoos, with the amount they
+/// earned from each (the artist keeps 100% — payment is P2P).
 class SalesPage extends StatefulWidget {
   const SalesPage({super.key});
 
@@ -29,12 +28,11 @@ class _SalesPageState extends State<SalesPage> {
     }
   }
 
-  /// Net the artist earned from [order] (only their items, minus the fee).
+  /// What the artist earned from [order] (only their items).
   double _netFrom(Order order) {
-    final gross = order.items
+    return order.items
         .where((i) => i.product.artistId == _artistId)
         .fold<double>(0, (sum, i) => sum + i.subtotal);
-    return PlatformFee.artistPayout(gross);
   }
 
   @override

@@ -14,6 +14,9 @@ class Artist extends Equatable {
   final double? latitude;
   final double? longitude;
 
+  /// Promoted artist ("Destaque") — sorted first and badged in the UI.
+  final bool featured;
+
   const Artist({
     required this.id,
     required this.name,
@@ -23,6 +26,7 @@ class Artist extends Equatable {
     this.region = '',
     this.latitude,
     this.longitude,
+    this.featured = false,
   });
 
   bool get isRated => rating > 0;
@@ -42,5 +46,6 @@ class Artist extends Equatable {
     region,
     latitude,
     longitude,
+    featured,
   ];
 }

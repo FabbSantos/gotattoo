@@ -13,6 +13,7 @@ import '../../bloc/product/product_bloc.dart';
 import '../../bloc/product/product_event.dart';
 import '../booking/my_bookings_page.dart';
 import '../chat/conversations_page.dart';
+import '../feed/tattoo_feed_page.dart';
 import '../notifications/notifications_page.dart';
 import '../../widgets/components/home/artist_picker_sheet.dart';
 import '../../widgets/components/home/artist_selector.dart';
@@ -93,6 +94,12 @@ class _HomePageState extends State<HomePage> with RouteAware {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MyBookingsPage()),
+        );
+        break;
+      case 4: // Mural de ideias
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TattooFeedPage()),
         );
         break;
       default: // Início
@@ -244,6 +251,10 @@ class _HomePageState extends State<HomePage> with RouteAware {
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_basket),
             label: 'Pedidos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.lightbulb_outline),
+            label: 'Mural',
           ),
         ],
         currentIndex: _selectedIndex,

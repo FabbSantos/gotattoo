@@ -8,6 +8,10 @@ abstract class ChatRepository {
   /// Find or create the current (client) user's thread with [artistId].
   Future<String> openWithArtist(String artistId);
 
+  /// Find or create the current (artist) user's thread with a [clientId] —
+  /// e.g. an artist reaching out to the author of a tattoo request.
+  Future<String> openWithClient(String clientId);
+
   /// Messages in [conversationId], oldest first.
   Future<List<ChatMessage>> messages(String conversationId);
 

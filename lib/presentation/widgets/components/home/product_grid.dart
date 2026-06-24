@@ -4,6 +4,7 @@ import '../../../../domain/entities/product.dart';
 import '../../../bloc/product/product_bloc.dart';
 import '../../../bloc/product/product_state.dart';
 import '../../user/product_card.dart';
+import '../common/native_ad_card.dart';
 
 /// Sliver grid bound to [ProductBloc]. Filtering already happens in the bloc,
 /// so this widget only renders whatever [ProductsLoaded] exposes.
@@ -53,6 +54,13 @@ class ProductGrid extends StatelessWidget {
             );
           }
 
+          final products = state.products;
+          // Drop one ad into the grid as a regular-looking card (the native ad
+          // is styled like a tattoo card), so it's seen mid-feed.
+          const adAt = 4; // cell index the ad occupies
+          final showAd = products.length > adAt;
+          final count = products.length + (showAd ? 1 : 0);
+
           return SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -60,26 +68,20 @@ class ProductGrid extends StatelessWidget {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final product = state.products[index];
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.15),
-                      spreadRadius: 1,
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ProductCard(
-                  product: product,
-                  onTap: () => onProductTap(product),
-                ),
-              );
-            }, childCount: state.products.length),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                if (showAd && index == adAt) return _shell(const NativeAdCard());
+                final product =
+                    products[showAd && index > adAt ? index - 1 : index];
+                return _shell(
+                  ProductCard(
+                    product: product,
+                    onTap: () => onProductTap(product),
+                  ),
+                );
+              },
+              childCount: count,
+            ),
           );
         }
 
@@ -87,6 +89,24 @@ class ProductGrid extends StatelessWidget {
           child: Center(child: Text('Nenhum produto encontrado')),
         );
       },
+    );
+  }
+
+  /// Card shell (rounded shadow) shared by product cards and the ad cell.
+  Widget _shell(Widget child) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.15),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 }

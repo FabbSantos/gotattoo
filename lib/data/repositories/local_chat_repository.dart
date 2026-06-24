@@ -11,6 +11,9 @@ class LocalChatRepository implements ChatRepository {
   Future<String> openWithArtist(String artistId) async => '';
 
   @override
+  Future<String> openWithClient(String clientId) async => '';
+
+  @override
   Future<List<ChatMessage>> messages(String conversationId) async => const [];
 
   @override

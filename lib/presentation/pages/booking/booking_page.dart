@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection_container.dart';
+import '../../../core/services/payment_service.dart';
 import '../../../domain/entities/artist_availability.dart';
 import '../../../domain/entities/booking.dart';
 import '../../../domain/entities/booking_status.dart';
@@ -91,9 +92,55 @@ class _BookingViewState extends State<_BookingView> {
     return from;
   }
 
-  void _confirm() {
+  bool _submitting = false;
+
+  Future<void> _confirm() async {
     final user = context.read<AuthCubit>().state.user;
     if (user == null || _date == null || _hour == null) return;
+
+    final payments = sl<PaymentService>();
+    // With Stripe on, spell out the charge up front, then save a card now (no
+    // charge); the artist's approval is what actually charges it.
+    if (payments.isConfigured) {
+      final price =
+          widget.product.effectivePrice.toStringAsFixed(2).replaceAll('.', ',');
+      final go = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Confirmar agendamento'),
+          content: Text(
+            'Quando o tatuador aprovar o agendamento, será cobrado '
+            'R\$ $price no seu cartão. Se ele recusar ou for cancelado, '
+            'você é reembolsado. Deseja agendar?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Agendar'),
+            ),
+          ],
+        ),
+      );
+      if (go != true) return;
+
+      setState(() => _submitting = true);
+      final saved = await payments.collectCard();
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      if (!saved) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('É preciso salvar um cartão para agendar.'),
+          ),
+        );
+        return;
+      }
+    }
+
     final scheduledAt = DateTime(
       _date!.year,
       _date!.month,
@@ -117,15 +164,20 @@ class _BookingViewState extends State<_BookingView> {
         createdAt: DateTime.now(),
       ),
     );
+    if (!mounted) return;
     showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         icon: const Icon(Icons.event_available, color: Colors.green, size: 48),
         title: const Text('Reserva enviada!'),
-        content: const Text(
-          'O pagamento ficou retido (simulado). Assim que o tatuador aprovar a '
-          'data, seu agendamento é confirmado.',
+        content: Text(
+          payments.isConfigured
+              ? 'Cartão salvo. Você só será cobrado quando o tatuador aprovar a '
+                  'data — e o valor é reembolsado se o agendamento for recusado '
+                  'ou cancelado.'
+              : 'O tatuador vai aprovar a data. O pagamento (valor e forma) é '
+                  'combinado direto com ele.',
         ),
         actions: [
           TextButton(
@@ -215,7 +267,7 @@ class _BookingViewState extends State<_BookingView> {
               SizedBox(
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: canConfirm ? _confirm : null,
+                  onPressed: (canConfirm && !_submitting) ? _confirm : null,
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Theme.of(context).primaryColor,
@@ -223,10 +275,19 @@ class _BookingViewState extends State<_BookingView> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    'CONFIRMAR AGENDAMENTO',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child: _submitting
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'CONFIRMAR AGENDAMENTO',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                 ),
               ),
             ],

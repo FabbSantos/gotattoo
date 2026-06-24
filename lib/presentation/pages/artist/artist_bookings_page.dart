@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection_container.dart';
+import '../../../core/services/payment_service.dart';
 import '../../../domain/entities/booking.dart';
 import '../../../domain/entities/booking_status.dart';
 import '../../bloc/auth/auth_cubit.dart';
@@ -51,6 +52,44 @@ class ArtistBookingsPage extends StatelessWidget {
     );
   }
 
+  /// Approve a booking. With Stripe on, this charges the client's saved card
+  /// (server-side) and confirms; otherwise it just confirms (simulated escrow).
+  Future<void> _approve(
+    BuildContext context,
+    BookingsCubit cubit,
+    Booking b,
+  ) async {
+    final payments = sl<PaymentService>();
+    if (!payments.isConfigured) {
+      await cubit.updateStatus(b.id, BookingStatus.confirmed);
+      return;
+    }
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Cobrando o cartão do cliente...')),
+    );
+    final ok = await payments.chargeBooking(b.id);
+    if (ok) {
+      await cubit.reload();
+    } else {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível cobrar o cliente. Tente de novo.'),
+        ),
+      );
+    }
+  }
+
+  /// Cancel a confirmed booking, refunding the charge if there was one.
+  Future<void> _cancelWithRefund(
+    BuildContext context,
+    BookingsCubit cubit,
+    Booking b,
+  ) async {
+    await sl<PaymentService>().refundBooking(b.id);
+    await cubit.updateStatus(b.id, BookingStatus.cancelled);
+  }
+
   List<Widget> _actionsFor(BuildContext context, Booking b) {
     final cubit = context.read<BookingsCubit>();
     switch (b.status) {
@@ -62,14 +101,14 @@ class ArtistBookingsPage extends StatelessWidget {
             child: const Text('Recusar'),
           ),
           FilledButton(
-            onPressed: () => cubit.updateStatus(b.id, BookingStatus.confirmed),
+            onPressed: () => _approve(context, cubit, b),
             child: const Text('Aprovar'),
           ),
         ];
       case BookingStatus.confirmed:
         return [
           OutlinedButton(
-            onPressed: () => cubit.updateStatus(b.id, BookingStatus.cancelled),
+            onPressed: () => _cancelWithRefund(context, cubit, b),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Cancelar'),
           ),

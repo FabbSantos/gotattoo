@@ -19,6 +19,9 @@ class Booking extends Equatable {
   final BookingStatus status;
   final DateTime createdAt;
 
+  /// Real Stripe-driven payment state: none | saved | paid | refunded | failed.
+  final String paymentStatus;
+
   const Booking({
     required this.id,
     required this.clientId,
@@ -32,9 +35,15 @@ class Booking extends Equatable {
     required this.status,
     required this.createdAt,
     this.durationHours = 2,
+    this.paymentStatus = 'none',
   });
 
-  Booking copyWith({BookingStatus? status}) => Booking(
+  /// Whether the card was actually charged (money held on the platform).
+  bool get isPaid => paymentStatus == 'paid';
+  bool get isRefunded => paymentStatus == 'refunded';
+  bool get paymentFailed => paymentStatus == 'failed';
+
+  Booking copyWith({BookingStatus? status, String? paymentStatus}) => Booking(
     id: id,
     clientId: clientId,
     clientName: clientName,
@@ -47,6 +56,7 @@ class Booking extends Equatable {
     durationHours: durationHours,
     status: status ?? this.status,
     createdAt: createdAt,
+    paymentStatus: paymentStatus ?? this.paymentStatus,
   );
 
   @override
@@ -63,5 +73,6 @@ class Booking extends Equatable {
     durationHours,
     status,
     createdAt,
+    paymentStatus,
   ];
 }

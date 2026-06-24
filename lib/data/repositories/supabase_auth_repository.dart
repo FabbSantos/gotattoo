@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
+import '../../core/config/google_auth_config.dart';
 import '../../core/error/exceptions.dart';
 import '../../domain/entities/auth_user.dart';
 import '../../domain/entities/user_role.dart';
@@ -77,6 +79,37 @@ class SupabaseAuthRepository implements AuthRepository {
       final user = res.user;
       if (user == null) {
         throw const AuthException('E-mail ou senha inválidos.');
+      }
+      return _toUser(user);
+    } on sb.AuthException catch (e) {
+      throw AuthException(e.message);
+    }
+  }
+
+  @override
+  Future<AuthUser> signInWithGoogle() async {
+    try {
+      final googleSignIn = GoogleSignIn(
+        serverClientId: GoogleAuthConfig.webClientId,
+      );
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        throw const AuthException('Login cancelado.');
+      }
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+      final accessToken = googleAuth.accessToken;
+      if (idToken == null) {
+        throw const AuthException('Não foi possível autenticar com o Google.');
+      }
+      final res = await client.auth.signInWithIdToken(
+        provider: sb.OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+      final user = res.user;
+      if (user == null) {
+        throw const AuthException('Falha no login com o Google.');
       }
       return _toUser(user);
     } on sb.AuthException catch (e) {

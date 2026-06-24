@@ -22,6 +22,7 @@ class SupabaseBookingRepository implements BookingRepository {
     durationHours: (r['duration_hours'] as num?)?.toInt() ?? 2,
     status: BookingStatus.fromName(r['status'] as String?),
     createdAt: DateTime.parse(r['created_at'] as String),
+    paymentStatus: r['payment_status'] as String? ?? 'none',
   );
 
   @override

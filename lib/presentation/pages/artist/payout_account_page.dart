@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/constants/platform_fee.dart';
 import '../../../domain/entities/payout_account.dart';
 import '../../bloc/session/session_cubit.dart';
 import '../../bloc/session/session_state.dart';
@@ -57,9 +56,9 @@ class _PayoutAccountPageState extends State<PayoutAccountPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Receba seus pagamentos via PayPal. A GoTattoo retém '
-                '${PlatformFee.label} de cada tatuagem vendida; o restante cai '
-                'na sua conta.',
+                'Guarde sua chave Pix/PayPal de referência. No momento o '
+                'pagamento das tatuagens é combinado direto com o cliente — '
+                'você fica com 100%.',
                 style: TextStyle(color: Colors.grey[700]),
               ),
               const SizedBox(height: 20),

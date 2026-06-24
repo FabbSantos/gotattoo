@@ -7,6 +7,7 @@ import '../../bloc/notification/notifications_state.dart';
 import '../artist/artist_bookings_page.dart';
 import '../booking/my_bookings_page.dart';
 import '../chat/conversations_page.dart';
+import '../feed/tattoo_feed_page.dart';
 
 /// Lists the user's booking notifications. Opening the page marks everything as
 /// read; tapping a row jumps to the relevant bookings screen.
@@ -31,6 +32,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final Widget dest;
     if (n.type == 'message') {
       dest = const ConversationsPage();
+    } else if (n.type == 'request_comment') {
+      dest = const TattooFeedPage();
+    } else if (n.type == 'payment_charged' || n.type == 'payment_refunded') {
+      dest = const MyBookingsPage();
     } else if (n.isForArtist) {
       dest = const ArtistBookingsPage();
     } else {
@@ -114,6 +119,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return Icons.event_busy;
       case 'message':
         return Icons.chat_bubble_outline;
+      case 'request_comment':
+        return Icons.lightbulb_outline;
+      case 'payment_charged':
+        return Icons.payments_outlined;
+      case 'payment_refunded':
+        return Icons.replay_outlined;
       default:
         return Icons.notifications_outlined;
     }

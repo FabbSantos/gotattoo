@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/platform_fee.dart';
 import '../../../domain/entities/product.dart';
 
 class ProductForm extends StatefulWidget {
@@ -148,8 +147,7 @@ class _ProductFormState extends State<ProductForm> {
               return null;
             },
           ),
-          // Fee breakdown — visible to the artist only. The customer sees just
-          // the final (discounted) price; the platform fee is embedded in it.
+          // Discounted-price hint for the artist (payment is P2P; they keep 100%).
           AnimatedBuilder(
             animation: Listenable.merge([_priceController, _discountController]),
             builder: (context, _) {
@@ -157,34 +155,14 @@ class _ProductFormState extends State<ProductForm> {
               if (price <= 0) return const SizedBox.shrink();
               final discount =
                   (int.tryParse(_discountController.text) ?? 0).clamp(0, 100);
+              if (discount <= 0) return const SizedBox.shrink();
               final effective = price * (1 - discount / 100);
-              final fee = PlatformFee.on(effective);
-              final payout = PlatformFee.artistPayout(effective);
               return Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (discount > 0)
-                      Text(
-                        'Cliente paga: R\$ ${effective.toStringAsFixed(2)} '
-                        '(de R\$ ${price.toStringAsFixed(2)})',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                      ),
-                    Text(
-                      'Taxa GoTattoo (${PlatformFee.label}): '
-                      '- R\$ ${fee.toStringAsFixed(2)}',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    Text(
-                      'Você recebe: R\$ ${payout.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Cliente paga: R\$ ${effective.toStringAsFixed(2)} '
+                  '(de R\$ ${price.toStringAsFixed(2)})',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                 ),
               );
             },

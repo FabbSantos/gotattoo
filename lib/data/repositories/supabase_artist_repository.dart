@@ -20,6 +20,7 @@ class SupabaseArtistRepository implements ArtistRepository {
     region: r['region'] as String? ?? '',
     latitude: (r['latitude'] as num?)?.toDouble(),
     longitude: (r['longitude'] as num?)?.toDouble(),
+    featured: r['featured'] as bool? ?? false,
   );
 
   @override
@@ -29,6 +30,7 @@ class SupabaseArtistRepository implements ArtistRepository {
           .from('profiles')
           .select()
           .eq('role', 'artist')
+          .order('featured', ascending: false)
           .order('rating', ascending: false);
       return Right(rows.map((r) => _toArtist(r)).toList());
     } catch (e) {

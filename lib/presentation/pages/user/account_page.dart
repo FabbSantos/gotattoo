@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/di/injection_container.dart';
+import '../../../core/services/payment_service.dart';
 import '../../../core/utils/avatar_image.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/auth/auth_state.dart';
@@ -8,6 +10,7 @@ import '../artist/artist_dashboard_page.dart';
 import '../artist/artist_profile_page.dart';
 import '../booking/my_bookings_page.dart';
 import 'edit_profile_page.dart';
+import 'payment_methods_page.dart';
 
 /// Profile hub: shows the signed-in user and links to their areas.
 class AccountPage extends StatelessWidget {
@@ -77,6 +80,18 @@ class AccountPage extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const MyBookingsPage()),
                 ),
               ),
+              if (sl<PaymentService>().isConfigured)
+                ListTile(
+                  leading: const Icon(Icons.credit_card),
+                  title: const Text('Formas de pagamento'),
+                  subtitle: const Text('Gerencie seus cartões salvos'),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PaymentMethodsPage(),
+                    ),
+                  ),
+                ),
               if (user?.isArtist ?? false) ...[
                 ListTile(
                   leading: const Icon(Icons.dashboard_customize),
@@ -111,4 +126,5 @@ class AccountPage extends StatelessWidget {
       ),
     );
   }
+
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/constants/platform_fee.dart';
 import '../../../core/di/injection_container.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/product/product_bloc.dart';
@@ -127,15 +126,15 @@ class ArtistDashboardPage extends StatelessWidget {
                 color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const Icon(Icons.info_outline),
-                  const SizedBox(width: 12),
+                  Icon(Icons.info_outline),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'O app é gratuito. A GoTattoo retém apenas '
-                      '${PlatformFee.label} por tatuagem vendida.',
-                      style: const TextStyle(fontSize: 13),
+                      'O app é gratuito e você fica com 100% do valor — o '
+                      'pagamento é combinado direto com o cliente.',
+                      style: TextStyle(fontSize: 13),
                     ),
                   ),
                 ],
@@ -148,8 +147,8 @@ class ArtistDashboardPage extends StatelessWidget {
   }
 }
 
-/// Estimated earnings card: the net total (after the platform fee) the artist
-/// would receive if every listed tattoo sold once.
+/// Estimated earnings card: the gross total the artist would make if every
+/// listed tattoo sold once (the artist keeps 100% — payment is P2P).
 class _RevenueSummary extends StatelessWidget {
   const _RevenueSummary();
 
@@ -162,11 +161,6 @@ class _RevenueSummary extends StatelessWidget {
         final loaded = state is ProductsLoaded;
         final tattoos = loaded ? state.products : const [];
         final gross = tattoos.fold<double>(0, (sum, p) => sum + p.price);
-        final net = tattoos.fold<double>(
-          0,
-          (sum, p) => sum + PlatformFee.artistPayout(p.price),
-        );
-        final fee = gross - net;
 
         return Container(
           width: double.infinity,
@@ -201,7 +195,7 @@ class _RevenueSummary extends StatelessWidget {
                 )
               else
                 Text(
-                  'R\$ ${net.toStringAsFixed(2)}',
+                  'R\$ ${gross.toStringAsFixed(2)}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 28,
@@ -211,8 +205,7 @@ class _RevenueSummary extends StatelessWidget {
               const SizedBox(height: 8),
               if (loaded)
                 Text(
-                  '${tattoos.length} tatuagens · taxa GoTattoo '
-                  '(${PlatformFee.label}) R\$ ${fee.toStringAsFixed(2)}',
+                  '${tattoos.length} tatuagens · você fica com 100%',
                   style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ),
             ],

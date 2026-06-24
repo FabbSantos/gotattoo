@@ -34,6 +34,11 @@ class BookingsCubit extends Cubit<BookingsState> {
 
   Future<void> updateStatus(String bookingId, BookingStatus status) async {
     await repository.updateStatus(bookingId, status);
+    await reload();
+  }
+
+  /// Re-run the last load (e.g. after a server-side charge changed a booking).
+  Future<void> reload() async {
     if (_clientId != null) {
       await loadForClient(_clientId!);
     } else if (_artistId != null) {
