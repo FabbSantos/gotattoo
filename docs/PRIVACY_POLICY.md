@@ -43,11 +43,8 @@ Cada um trata os dados conforme suas próprias políticas de privacidade.
 ## 4. Seus direitos
 
 Você pode editar seu perfil no app a qualquer momento. Para **excluir sua conta
-e seus dados**, ou para qualquer dúvida sobre privacidade, fale com a gente:
-
-- **E-mail:** fabriciobs2000@gmail.com
-
-Atenderemos os pedidos em prazo razoável.
+e seus dados**, ou para qualquer dúvida sobre privacidade, fale com a gente pelo
+app, em **Conta → Ajuda e Suporte**. Atenderemos os pedidos em prazo razoável.
 
 ## 5. Retenção
 
@@ -66,4 +63,4 @@ ou por e-mail.
 
 ## 8. Contato
 
-Dúvidas? **fabriciobs2000@gmail.com**
+Dúvidas? Fale com a gente pelo app, em **Conta → Ajuda e Suporte**.

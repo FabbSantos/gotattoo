@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../../core/constants/brand.dart';
 import '../../../core/di/injection_container.dart';
 import '../../../core/services/payment_service.dart';
 import '../../../core/utils/avatar_image.dart';
@@ -16,6 +14,8 @@ import '../artist/artist_dashboard_page.dart';
 import '../artist/artist_profile_page.dart';
 import '../artist/pending_artists_page.dart';
 import '../booking/my_bookings_page.dart';
+import '../support/support_inbox_page.dart';
+import '../support/support_thread_page.dart';
 import 'edit_profile_page.dart';
 import 'payment_methods_page.dart';
 import 'privacy_policy_page.dart';
@@ -202,7 +202,7 @@ class AccountPage extends StatelessWidget {
                   ),
                 ),
               ],
-              if (user?.isOwner ?? false)
+              if (user?.isOwner ?? false) ...[
                 ListTile(
                   leading: const Icon(Icons.how_to_reg_outlined),
                   title: const Text('Pedidos de tatuador'),
@@ -214,6 +214,18 @@ class AccountPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                ListTile(
+                  leading: const Icon(Icons.forum_outlined),
+                  title: const Text('Mural de suporte'),
+                  subtitle: const Text('Mensagens dos usuários'),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SupportInboxPage(),
+                    ),
+                  ),
+                ),
+              ],
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.person_add_alt_1_outlined),
@@ -227,12 +239,22 @@ class AccountPage extends StatelessWidget {
                 subtitle: const Text('Curtindo? Deixe uma nota na loja 💜'),
                 onTap: _rate,
               ),
-              ListTile(
-                leading: const Icon(Icons.help_outline),
-                title: const Text('Ajuda e suporte'),
-                subtitle: const Text('Fale com a gente'),
-                onTap: _support,
-              ),
+              if (user != null)
+                ListTile(
+                  leading: const Icon(Icons.help_outline),
+                  title: const Text('Ajuda e suporte'),
+                  subtitle: const Text('Fale com a gente pelo app'),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SupportThreadPage(
+                        threadUserId: user.id,
+                        asOwner: false,
+                        title: 'Ajuda e suporte',
+                      ),
+                    ),
+                  ),
+                ),
               ListTile(
                 leading: const Icon(Icons.privacy_tip_outlined),
                 title: const Text('Política de privacidade'),
@@ -325,16 +347,4 @@ class AccountPage extends StatelessWidget {
     }
   }
 
-  Future<void> _support() async {
-    final uri = Uri(
-      scheme: 'mailto',
-      path: Brand.supportEmail,
-      query: 'subject=${Uri.encodeComponent('Suporte GoTattoo')}',
-    );
-    try {
-      await launchUrl(uri);
-    } catch (_) {
-      // No mail app — nothing we can do.
-    }
-  }
 }

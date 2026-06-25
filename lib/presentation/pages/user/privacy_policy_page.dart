@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/brand.dart';
-
 /// In-app privacy policy. The same text is mirrored in docs/PRIVACY_POLICY.md,
 /// which is what gets hosted for the Play Store listing's required URL.
 class PrivacyPolicyPage extends StatelessWidget {
@@ -44,7 +42,8 @@ class PrivacyPolicyPage extends StatelessWidget {
     (
       '4. Seus direitos',
       'Você pode editar seu perfil a qualquer momento. Para excluir sua conta e '
-          'seus dados, ou tirar dúvidas, fale com a gente: ${Brand.supportEmail}.',
+          'seus dados, ou tirar dúvidas, fale com a gente pelo app em '
+          'Conta → Ajuda e Suporte.',
     ),
     (
       '5. Retenção',
@@ -57,7 +56,7 @@ class PrivacyPolicyPage extends StatelessWidget {
     ),
     (
       '7. Contato',
-      'Dúvidas? ${Brand.supportEmail}',
+      'Dúvidas? Fale com a gente pelo app, em Conta → Ajuda e Suporte.',
     ),
   ];
 

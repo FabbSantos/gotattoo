@@ -10,6 +10,8 @@ import '../artist/pending_artists_page.dart';
 import '../booking/my_bookings_page.dart';
 import '../chat/conversations_page.dart';
 import '../feed/tattoo_feed_page.dart';
+import '../support/support_inbox_page.dart';
+import '../support/support_thread_page.dart';
 import '../user/account_page.dart';
 
 /// Lists the user's booking notifications. Opening the page marks everything as
@@ -39,6 +41,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
       dest = const TattooFeedPage();
     } else if (n.type == 'artist_request') {
       dest = const PendingArtistsPage();
+    } else if (n.type == 'support_message') {
+      dest = const SupportInboxPage();
+    } else if (n.type == 'support_reply') {
+      dest = SupportThreadPage(
+        threadUserId: n.userId,
+        asOwner: false,
+        title: 'Ajuda e suporte',
+      );
     } else if (n.type == 'artist_approved' || n.type == 'artist_rejected') {
       // Re-sync so a freshly approved artist gets their new role right away.
       context.read<AuthCubit>().refresh();
@@ -167,6 +177,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return Icons.lightbulb_outline;
       case 'artist_request':
         return Icons.how_to_reg_outlined;
+      case 'support_message':
+      case 'support_reply':
+        return Icons.forum_outlined;
       case 'artist_approved':
         return Icons.verified_outlined;
       case 'artist_rejected':

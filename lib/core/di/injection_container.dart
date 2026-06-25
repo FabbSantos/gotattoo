@@ -15,9 +15,12 @@ import '../../data/repositories/local_chat_repository.dart';
 import '../../data/repositories/supabase_chat_repository.dart';
 import '../../data/repositories/local_tattoo_request_repository.dart';
 import '../../data/repositories/supabase_tattoo_request_repository.dart';
+import '../../data/repositories/supabase_support_repository.dart';
+import '../../data/repositories/support_repository_stub.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../domain/repositories/tattoo_request_repository.dart';
+import '../../domain/repositories/support_repository.dart';
 import '../../presentation/bloc/notification/notifications_cubit.dart';
 import '../../presentation/bloc/chat/conversations_cubit.dart';
 import '../../presentation/bloc/feed/tattoo_feed_cubit.dart';
@@ -173,6 +176,9 @@ Future<void> initDependencies() async {
     sl.registerLazySingleton<TattooRequestRepository>(
       () => SupabaseTattooRequestRepository(client),
     );
+    sl.registerLazySingleton<SupportRepository>(
+      () => SupabaseSupportRepository(client),
+    );
   } else {
     // Offline mode: local mock data + auth seeded with demo artist accounts.
     final authRepository = AuthRepositoryImpl(prefs: prefs);
@@ -207,6 +213,9 @@ Future<void> initDependencies() async {
     );
     sl.registerLazySingleton<TattooRequestRepository>(
       () => LocalTattooRequestRepository(),
+    );
+    sl.registerLazySingleton<SupportRepository>(
+      () => SupportRepositoryStub(),
     );
   }
 
