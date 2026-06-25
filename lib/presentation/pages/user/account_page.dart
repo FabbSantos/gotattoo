@@ -18,6 +18,7 @@ import '../artist/pending_artists_page.dart';
 import '../booking/my_bookings_page.dart';
 import 'edit_profile_page.dart';
 import 'payment_methods_page.dart';
+import 'privacy_policy_page.dart';
 
 /// Profile hub: shows the signed-in user and links to their areas.
 class AccountPage extends StatelessWidget {
@@ -231,6 +232,16 @@ class AccountPage extends StatelessWidget {
                 title: const Text('Ajuda e suporte'),
                 subtitle: const Text('Fale com a gente'),
                 onTap: _support,
+              ),
+              ListTile(
+                leading: const Icon(Icons.privacy_tip_outlined),
+                title: const Text('Política de privacidade'),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PrivacyPolicyPage(),
+                  ),
+                ),
               ),
               const Divider(),
               ListTile(
