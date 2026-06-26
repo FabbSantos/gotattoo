@@ -23,7 +23,7 @@ class SupabaseSupportRepository implements SupportRepository {
         .from('support_messages')
         .stream(primaryKey: ['id'])
         .eq('thread_user_id', threadUserId)
-        .order('created_at')
+        .order('created_at', ascending: true)
         .map((rows) => rows.map(_toMsg).toList());
   }
 

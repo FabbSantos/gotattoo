@@ -25,6 +25,7 @@ class SupportThreadPage extends StatefulWidget {
 class _SupportThreadPageState extends State<SupportThreadPage> {
   final _repo = sl<SupportRepository>();
   final _controller = TextEditingController();
+  final _scroll = ScrollController();
   late final Stream<List<SupportMessage>> _stream =
       _repo.watch(widget.threadUserId);
   bool _sending = false;
@@ -32,7 +33,16 @@ class _SupportThreadPageState extends State<SupportThreadPage> {
   @override
   void dispose() {
     _controller.dispose();
+    _scroll.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scroll.hasClients) {
+        _scroll.jumpTo(_scroll.position.maxScrollExtent);
+      }
+    });
   }
 
   Future<void> _send() async {
@@ -87,7 +97,9 @@ class _SupportThreadPageState extends State<SupportThreadPage> {
                     ),
                   );
                 }
+                _scrollToBottom();
                 return ListView.builder(
+                  controller: _scroll,
                   padding: const EdgeInsets.all(12),
                   itemCount: msgs.length,
                   itemBuilder: (context, i) => _bubble(context, msgs[i]),
