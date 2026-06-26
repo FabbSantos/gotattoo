@@ -35,5 +35,8 @@ abstract class AuthRepository {
   /// portfolio link and notifies the owner.
   Future<void> requestArtist(String portfolio);
 
+  /// Permanently delete the current user's account and all their data.
+  Future<void> deleteAccount();
+
   Future<void> logout();
 }

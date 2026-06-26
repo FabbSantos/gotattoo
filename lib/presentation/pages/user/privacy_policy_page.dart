@@ -51,8 +51,9 @@ class PrivacyPolicyPage extends StatelessWidget {
           'dados pessoais (cópias podem permanecer brevemente em backups).',
     ),
     (
-      '6. Crianças',
-      'O app não é destinado a menores de 18 anos.',
+      '6. Idade',
+      'O app não é destinado a menores de 16 anos. A realização de tatuagens '
+          'é restrita por lei a maiores de 18 anos.',
     ),
     (
       '7. Contato',

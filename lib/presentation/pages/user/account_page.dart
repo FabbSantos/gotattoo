@@ -16,6 +16,7 @@ import '../artist/pending_artists_page.dart';
 import '../booking/my_bookings_page.dart';
 import '../support/support_inbox_page.dart';
 import '../support/support_thread_page.dart';
+import 'blocked_users_page.dart';
 import 'edit_profile_page.dart';
 import 'payment_methods_page.dart';
 import 'privacy_policy_page.dart';
@@ -256,6 +257,16 @@ class AccountPage extends StatelessWidget {
                   ),
                 ),
               ListTile(
+                leading: const Icon(Icons.block_outlined),
+                title: const Text('Usuários bloqueados'),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const BlockedUsersPage(),
+                  ),
+                ),
+              ),
+              ListTile(
                 leading: const Icon(Icons.privacy_tip_outlined),
                 title: const Text('Política de privacidade'),
                 onTap: () => Navigator.push(
@@ -271,6 +282,16 @@ class AccountPage extends StatelessWidget {
                 title: const Text('Sair', style: TextStyle(color: Colors.red)),
                 onTap: () => context.read<AuthCubit>().logout(),
               ),
+              if (user != null)
+                ListTile(
+                  leading: Icon(Icons.delete_forever_outlined,
+                      color: Colors.grey[600]),
+                  title: Text(
+                    'Excluir minha conta',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  onTap: () => _deleteAccount(context),
+                ),
             ],
           );
         },
@@ -327,6 +348,43 @@ class AccountPage extends StatelessWidget {
     messenger.showSnackBar(
       const SnackBar(content: Text('Pedido enviado! Você será avisado.')),
     );
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    final cubit = context.read<AuthCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Excluir minha conta'),
+        content: const Text(
+          'Isso apaga permanentemente sua conta e todos os seus dados '
+          '(perfil, posts, comentários, mensagens e agendamentos). '
+          'Não dá pra desfazer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    try {
+      await cubit.deleteAccount();
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível excluir agora. Tente de novo.'),
+        ),
+      );
+    }
   }
 
   Future<void> _invite() async {

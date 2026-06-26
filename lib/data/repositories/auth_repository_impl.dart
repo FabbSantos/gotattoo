@@ -158,6 +158,17 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> requestArtist(String portfolio) async {}
 
   @override
+  Future<void> deleteAccount() async {
+    final email = prefs.getString(_currentKey);
+    if (email != null) {
+      final users = _readUsers();
+      users.remove(email);
+      await _writeUsers(users);
+    }
+    await prefs.remove(_currentKey);
+  }
+
+  @override
   Future<void> logout() async {
     await prefs.remove(_currentKey);
   }

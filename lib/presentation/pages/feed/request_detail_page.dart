@@ -6,6 +6,7 @@ import '../../../core/utils/avatar_image.dart';
 import '../../../domain/entities/request_comment.dart';
 import '../../../domain/entities/tattoo_request.dart';
 import '../../../domain/repositories/chat_repository.dart';
+import '../../../domain/repositories/block_repository.dart';
 import '../../../domain/repositories/tattoo_request_repository.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/feed/request_comments_cubit.dart';
@@ -110,6 +111,42 @@ class _DetailViewState extends State<_DetailView> {
     if (mounted) navigator.pop();
   }
 
+  Future<void> _block() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final name = widget.request.authorName.isEmpty
+        ? 'esse usuário'
+        : widget.request.authorName;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Bloquear usuário?'),
+        content: Text(
+          'Você não verá mais posts e comentários de $name no mural.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Bloquear'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    try {
+      await sl<BlockRepository>().block(widget.request.authorId);
+    } catch (_) {}
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Usuário bloqueado.')),
+    );
+    navigator.pop();
+  }
+
   Future<void> _report() async {
     const reasons = [
       'Conteúdo sexual explícito',
@@ -192,6 +229,7 @@ class _DetailViewState extends State<_DetailView> {
                   if (v == 'edit') _edit();
                   if (v == 'delete') _delete();
                   if (v == 'report') _report();
+                  if (v == 'block') _block();
                 },
                 itemBuilder: (_) => isAuthor
                     ? const [
@@ -219,6 +257,14 @@ class _DetailViewState extends State<_DetailView> {
                             Icon(Icons.flag_outlined, size: 18, color: Colors.red),
                             SizedBox(width: 8),
                             Text('Denunciar'),
+                          ]),
+                        ),
+                        PopupMenuItem(
+                          value: 'block',
+                          child: Row(children: [
+                            Icon(Icons.block, size: 18, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('Bloquear usuário'),
                           ]),
                         ),
                       ],

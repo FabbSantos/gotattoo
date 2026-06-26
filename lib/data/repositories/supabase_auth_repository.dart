@@ -184,5 +184,11 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount() async {
+    await client.rpc('delete_my_account');
+    await client.auth.signOut();
+  }
+
+  @override
   Future<void> logout() => client.auth.signOut();
 }

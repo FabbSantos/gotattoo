@@ -9,6 +9,15 @@ class SupabaseTattooRequestRepository implements TattooRequestRepository {
 
   SupabaseTattooRequestRepository(this.client);
 
+  /// Ids the given user has blocked (their content is hidden from the feed).
+  Future<Set<String>> _blockedIds(String uid) async {
+    final rows = await client
+        .from('user_blocks')
+        .select('blocked_id')
+        .eq('blocker_id', uid);
+    return rows.map((r) => r['blocked_id'] as String).toSet();
+  }
+
   TattooRequest _toRequest(Map<String, dynamic> r) => TattooRequest(
         id: r['id'] as String,
         authorId: r['author_id'] as String,
@@ -46,11 +55,19 @@ class SupabaseTattooRequestRepository implements TattooRequestRepository {
         .from('tattoo_requests')
         .select()
         .order('created_at', ascending: false);
-    final list = rows.map((r) => _toRequest(r)).toList();
+    var list = rows.map((r) => _toRequest(r)).toList();
 
     // Mark which ones the current user has liked.
     final uid = client.auth.currentUser?.id;
     if (uid == null || list.isEmpty) return list;
+
+    // Hide posts from blocked users.
+    final blocked = await _blockedIds(uid);
+    if (blocked.isNotEmpty) {
+      list = list.where((r) => !blocked.contains(r.authorId)).toList();
+    }
+    if (list.isEmpty) return list;
+
     final likes = await client
         .from('request_likes')
         .select('request_id')
@@ -132,7 +149,16 @@ class SupabaseTattooRequestRepository implements TattooRequestRepository {
         .select()
         .eq('request_id', requestId)
         .order('created_at', ascending: true);
-    return rows.map((r) => _toComment(r)).toList();
+    var list = rows.map((r) => _toComment(r)).toList();
+    // Hide comments from blocked users.
+    final uid = client.auth.currentUser?.id;
+    if (uid != null && list.isNotEmpty) {
+      final blocked = await _blockedIds(uid);
+      if (blocked.isNotEmpty) {
+        list = list.where((c) => !blocked.contains(c.authorId)).toList();
+      }
+    }
+    return list;
   }
 
   @override

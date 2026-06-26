@@ -108,4 +108,10 @@ class AuthCubit extends Cubit<AuthState> {
     await repository.logout();
     emit(const AuthState(status: AuthStatus.unauthenticated));
   }
+
+  /// Permanently delete the account, then drop to the logged-out state.
+  Future<void> deleteAccount() async {
+    await repository.deleteAccount();
+    emit(const AuthState(status: AuthStatus.unauthenticated));
+  }
 }

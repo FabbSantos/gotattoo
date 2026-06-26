@@ -51,10 +51,10 @@ app, em **Conta → Ajuda e Suporte**. Atenderemos os pedidos em prazo razoável
 Mantemos seus dados enquanto sua conta existir. Ao excluir a conta, removemos
 seus dados pessoais (algumas cópias podem permanecer brevemente em backups).
 
-## 6. Crianças
+## 6. Idade
 
-O app não é destinado a menores de 18 anos. Tatuagem é restrita por lei a
-maiores de idade.
+O app não é destinado a menores de 16 anos. A realização de tatuagens é
+restrita por lei a maiores de 18 anos.
 
 ## 7. Alterações
 
