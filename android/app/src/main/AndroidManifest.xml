@@ -11,11 +11,10 @@
         android:label="GoTattoo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <!-- AdMob App ID. This is GOOGLE'S TEST id — replace with your real
-             app id (AdMob → app settings) before publishing to production. -->
+        <!-- AdMob App ID (real GoTattoo app). -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-3671028401334746~4796648210"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
