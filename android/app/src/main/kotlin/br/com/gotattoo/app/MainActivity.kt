@@ -1,4 +1,4 @@
-package com.example.gotattoo
+package br.com.gotattoo.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine

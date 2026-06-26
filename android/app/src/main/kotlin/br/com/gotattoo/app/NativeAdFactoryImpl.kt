@@ -1,4 +1,4 @@
-package com.example.gotattoo
+package br.com.gotattoo.app
 
 import android.view.LayoutInflater
 import android.view.View

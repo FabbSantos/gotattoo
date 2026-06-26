@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:14900184551:android:47aebc375e55adacffe942",
+        "mobilesdk_app_id": "1:14900184551:android:61a21e0affd16ea5ffe942",
         "android_client_info": {
-          "package_name": "com.example.gotattoo"
+          "package_name": "br.com.gotattoo.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "14900184551-io57vvld378j1uvlb98hslrh91dah1oq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyClwqp3XKzH3yKd0ZzE_0SU68wPJQIvIzQ"
@@ -20,7 +25,41 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14900184551-io57vvld378j1uvlb98hslrh91dah1oq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14900184551:android:47aebc375e55adacffe942",
+        "android_client_info": {
+          "package_name": "com.example.gotattoo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "14900184551-io57vvld378j1uvlb98hslrh91dah1oq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClwqp3XKzH3yKd0ZzE_0SU68wPJQIvIzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14900184551-io57vvld378j1uvlb98hslrh91dah1oq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
