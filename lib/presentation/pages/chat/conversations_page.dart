@@ -65,7 +65,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
               separatorBuilder: (_, __) => const Divider(height: 1, indent: 72),
               itemBuilder: (context, i) {
                 final c = state.items[i];
-                return ListTile(
+                final tile = ListTile(
                   leading: CircleAvatar(
                     radius: 26,
                     backgroundColor: Colors.grey[200],
@@ -131,6 +131,21 @@ class _ConversationsPageState extends State<ConversationsPage> {
                         )
                       : null,
                   onTap: () => _open(c.id, c.otherName),
+                );
+                if (c.unread == 0) return tile;
+                return DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      stops: const [0.5, 1.0],
+                      colors: [
+                        Colors.transparent,
+                        primary.withValues(alpha: 0.12),
+                      ],
+                    ),
+                  ),
+                  child: tile,
                 );
               },
             ),

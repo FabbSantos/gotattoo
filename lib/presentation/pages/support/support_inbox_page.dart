@@ -65,7 +65,9 @@ class _SupportInboxPageState extends State<SupportInboxPage> {
 
   Widget _tile(SupportThread t) {
     final image = avatarImage(t.userAvatar);
-    return ListTile(
+    // The user spoke last → the thread is waiting on the owner (unread).
+    final unread = !t.lastFromOwner;
+    final tile = ListTile(
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
         backgroundImage: image,
@@ -91,6 +93,21 @@ class _SupportInboxPageState extends State<SupportInboxPage> {
         );
         _load();
       },
+    );
+    if (!unread) return tile;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          stops: const [0.5, 1.0],
+          colors: [
+            Colors.transparent,
+            Theme.of(context).primaryColor.withValues(alpha: 0.12),
+          ],
+        ),
+      ),
+      child: tile,
     );
   }
 }
