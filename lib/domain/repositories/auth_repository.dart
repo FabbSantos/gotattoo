@@ -12,6 +12,7 @@ abstract class AuthRepository {
     required String password,
     required UserRole role,
     String? portfolio,
+    String? instagram,
   });
 
   Future<AuthUser> login({required String email, required String password});
@@ -27,6 +28,7 @@ abstract class AuthRepository {
     double? latitude,
     double? longitude,
     String? portfolio,
+    String? instagram,
   });
 
   /// Ask (or re-ask) to become an artist: sets status to pending, saves the

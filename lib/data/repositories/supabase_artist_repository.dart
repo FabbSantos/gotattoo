@@ -23,6 +23,7 @@ class SupabaseArtistRepository implements ArtistRepository {
     featured: r['featured'] as bool? ?? false,
     isOwner: r['is_owner'] as bool? ?? false,
     portfolio: r['portfolio'] as String? ?? '',
+    instagram: r['instagram'] as String? ?? '',
   );
 
   @override

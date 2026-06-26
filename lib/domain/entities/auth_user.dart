@@ -26,8 +26,11 @@ class AuthUser extends Equatable {
   /// Artist application state: 'none' | 'pending' | 'approved' | 'rejected'.
   final String artistStatus;
 
-  /// Artist portfolio link (Instagram/site/...), given at sign-up.
+  /// Artist portfolio link (site/Behance/...), given at sign-up.
   final String portfolio;
+
+  /// Artist Instagram @handle (without the @).
+  final String instagram;
 
   /// Why the artist application was rejected (shown to the applicant).
   final String rejectReason;
@@ -44,6 +47,7 @@ class AuthUser extends Equatable {
     this.isOwner = false,
     this.artistStatus = 'none',
     this.portfolio = '',
+    this.instagram = '',
     this.rejectReason = '',
   });
 
@@ -67,6 +71,7 @@ class AuthUser extends Equatable {
     bool? isOwner,
     String? artistStatus,
     String? portfolio,
+    String? instagram,
     String? rejectReason,
   }) {
     return AuthUser(
@@ -81,6 +86,7 @@ class AuthUser extends Equatable {
       isOwner: isOwner ?? this.isOwner,
       artistStatus: artistStatus ?? this.artistStatus,
       portfolio: portfolio ?? this.portfolio,
+      instagram: instagram ?? this.instagram,
       rejectReason: rejectReason ?? this.rejectReason,
     );
   }
@@ -97,6 +103,7 @@ class AuthUser extends Equatable {
     'isOwner': isOwner,
     'artistStatus': artistStatus,
     'portfolio': portfolio,
+    'instagram': instagram,
     'rejectReason': rejectReason,
   };
 
@@ -113,6 +120,7 @@ class AuthUser extends Equatable {
       isOwner: json['isOwner'] as bool? ?? false,
       artistStatus: json['artistStatus'] as String? ?? 'none',
       portfolio: json['portfolio'] as String? ?? '',
+      instagram: json['instagram'] as String? ?? '',
       rejectReason: json['rejectReason'] as String? ?? '',
     );
   }
@@ -130,6 +138,7 @@ class AuthUser extends Equatable {
     isOwner,
     artistStatus,
     portfolio,
+    instagram,
     rejectReason,
   ];
 }

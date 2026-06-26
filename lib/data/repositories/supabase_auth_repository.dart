@@ -36,6 +36,7 @@ class SupabaseAuthRepository implements AuthRepository {
       isOwner: map['is_owner'] as bool? ?? false,
       artistStatus: map['artist_status'] as String? ?? 'none',
       portfolio: map['portfolio'] as String? ?? '',
+      instagram: map['instagram'] as String? ?? '',
       rejectReason: map['reject_reason'] as String? ?? '',
     );
   }
@@ -54,6 +55,7 @@ class SupabaseAuthRepository implements AuthRepository {
     required String password,
     required UserRole role,
     String? portfolio,
+    String? instagram,
   }) async {
     try {
       final res = await client.auth.signUp(
@@ -63,6 +65,7 @@ class SupabaseAuthRepository implements AuthRepository {
           'name': name,
           'role': role.name,
           if (portfolio != null) 'portfolio': portfolio,
+          if (instagram != null) 'instagram': instagram,
         },
       );
       final user = res.user;
@@ -135,6 +138,7 @@ class SupabaseAuthRepository implements AuthRepository {
     double? latitude,
     double? longitude,
     String? portfolio,
+    String? instagram,
   }) async {
     final user = client.auth.currentUser;
     if (user == null) {
@@ -166,6 +170,7 @@ class SupabaseAuthRepository implements AuthRepository {
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
       if (portfolio != null) 'portfolio': portfolio,
+      if (instagram != null) 'instagram': instagram,
     };
     if (updates.isNotEmpty) {
       await client.from('profiles').update(updates).eq('id', user.id);

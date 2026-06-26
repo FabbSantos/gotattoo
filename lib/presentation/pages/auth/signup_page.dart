@@ -18,6 +18,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _portfolioController = TextEditingController();
+  final _instagramController = TextEditingController();
   UserRole _role = UserRole.client;
   bool _obscure = true;
 
@@ -27,18 +28,20 @@ class _SignUpPageState extends State<SignUpPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _portfolioController.dispose();
+    _instagramController.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
+    final isArtist = _role == UserRole.artist;
     context.read<AuthCubit>().signUp(
       name: _nameController.text,
       email: _emailController.text,
       password: _passwordController.text,
       role: _role,
-      portfolio:
-          _role == UserRole.artist ? _portfolioController.text.trim() : null,
+      portfolio: isArtist ? _portfolioController.text.trim() : null,
+      instagram: isArtist ? _instagramController.text.trim() : null,
     );
   }
 
@@ -123,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     keyboardType: TextInputType.url,
                     decoration: const InputDecoration(
                       labelText: 'Link do portfólio',
-                      hintText: 'Instagram, site, Behance...',
+                      hintText: 'Site, Behance, drive...',
                       prefixIcon: Icon(Icons.link),
                     ),
                     validator: (v) {
@@ -133,6 +136,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                       return null;
                     },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _instagramController,
+                    decoration: const InputDecoration(
+                      labelText: 'Instagram (opcional)',
+                      hintText: '@seu_perfil',
+                      prefixIcon: Icon(Icons.camera_alt_outlined),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10),

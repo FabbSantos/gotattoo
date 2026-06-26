@@ -19,6 +19,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _nicknameController;
+  late final TextEditingController _instagramController;
+  bool _isArtist = false;
   String? _avatarPath;
 
   @override
@@ -27,6 +29,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final user = context.read<AuthCubit>().state.user;
     _nameController = TextEditingController(text: user?.name ?? '');
     _nicknameController = TextEditingController(text: user?.nickname ?? '');
+    _instagramController = TextEditingController(text: user?.instagram ?? '');
+    _isArtist = user?.isArtist ?? false;
     _avatarPath = user?.avatarPath;
   }
 
@@ -34,6 +38,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void dispose() {
     _nameController.dispose();
     _nicknameController.dispose();
+    _instagramController.dispose();
     super.dispose();
   }
 
@@ -54,6 +59,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       name: _nameController.text,
       nickname: _nicknameController.text,
       avatarPath: _avatarPath,
+      instagram: _isArtist ? _instagramController.text.trim() : null,
     );
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -128,6 +134,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   prefixIcon: Icon(Icons.alternate_email),
                 ),
               ),
+              if (_isArtist) ...[
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _instagramController,
+                  decoration: const InputDecoration(
+                    labelText: 'Instagram',
+                    hintText: '@seu_perfil',
+                    prefixIcon: Icon(Icons.camera_alt_outlined),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,

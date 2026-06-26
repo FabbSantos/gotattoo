@@ -49,6 +49,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String password,
     required UserRole role,
     String? portfolio,
+    String? instagram,
   }) async {
     emit(state.copyWith(submitting: true, error: null));
     try {
@@ -58,6 +59,7 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         role: role,
         portfolio: portfolio,
+        instagram: instagram,
       );
       emit(AuthState(status: AuthStatus.authenticated, user: user));
     } on AuthException catch (e) {
@@ -72,6 +74,7 @@ class AuthCubit extends Cubit<AuthState> {
     double? latitude,
     double? longitude,
     String? portfolio,
+    String? instagram,
   }) async {
     final user = await repository.updateProfile(
       name: name,
@@ -80,6 +83,7 @@ class AuthCubit extends Cubit<AuthState> {
       latitude: latitude,
       longitude: longitude,
       portfolio: portfolio,
+      instagram: instagram,
     );
     emit(state.copyWith(status: AuthStatus.authenticated, user: user));
   }

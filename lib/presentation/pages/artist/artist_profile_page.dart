@@ -227,6 +227,19 @@ class _ProfileView extends StatelessWidget {
                   ),
                 ),
               ],
+              if (artist.instagram.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton.icon(
+                    onPressed: () => openInstagram(artist.instagram),
+                    icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                    label: Text(
+                      'Ver Instagram  @${artist.instagram.replaceAll('@', '')}',
+                    ),
+                  ),
+                ),
+              ],
               const Divider(height: 32),
               const Text(
                 'Tatuagens deste artista',
