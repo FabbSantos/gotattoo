@@ -71,11 +71,16 @@ class ProductGrid extends StatelessWidget {
           }
 
           final products = state.products;
-          // Drop one ad into the grid as a regular-looking card (the native ad
-          // is styled like a tattoo card), so it's seen mid-feed.
-          const adAt = 4; // cell index the ad occupies
-          final showAd = products.length > adAt;
-          final count = products.length + (showAd ? 1 : 0);
+          // Sprinkle a native ad (styled like a tattoo card) every few cells,
+          // so the grid stays mostly content. `null` marks an ad slot.
+          const adEvery = 6;
+          final display = <Product?>[];
+          for (var i = 0; i < products.length; i++) {
+            display.add(products[i]);
+            if ((i + 1) % adEvery == 0 && i != products.length - 1) {
+              display.add(null);
+            }
+          }
 
           return SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -86,9 +91,8 @@ class ProductGrid extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                if (showAd && index == adAt) return _shell(const NativeAdCard());
-                final product =
-                    products[showAd && index > adAt ? index - 1 : index];
+                final product = display[index];
+                if (product == null) return _shell(const NativeAdCard());
                 return _shell(
                   ProductCard(
                     product: product,
@@ -96,7 +100,7 @@ class ProductGrid extends StatelessWidget {
                   ),
                 );
               },
-              childCount: count,
+              childCount: display.length,
             ),
           );
         }

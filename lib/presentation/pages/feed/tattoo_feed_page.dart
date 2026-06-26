@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart' show AdSize;
 
 import '../../../core/di/injection_container.dart';
 import '../../../core/utils/avatar_image.dart';
@@ -119,18 +120,35 @@ class _FeedViewState extends State<_FeedView> {
               ),
             );
           }
+          // Intersperse a card-sized ad every few posts. `null` marks an ad.
+          const adEvery = 6;
+          final entries = <dynamic>[];
+          for (var i = 0; i < items.length; i++) {
+            entries.add(items[i]);
+            if ((i + 1) % adEvery == 0 && i != items.length - 1) {
+              entries.add(null);
+            }
+          }
           return RefreshIndicator(
             onRefresh: _refresh,
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: items.length,
+              itemCount: entries.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, i) => _RequestCard(
-                request: items[i],
-                onTap: () => _open(items[i]),
-                onLike: () =>
-                    context.read<TattooFeedCubit>().toggleLike(items[i].id),
-              ),
+              itemBuilder: (context, i) {
+                final entry = entries[i];
+                if (entry == null) {
+                  return const Center(
+                    child: FeedBannerAd(size: AdSize.mediumRectangle),
+                  );
+                }
+                return _RequestCard(
+                  request: entry,
+                  onTap: () => _open(entry),
+                  onLike: () =>
+                      context.read<TattooFeedCubit>().toggleLike(entry.id),
+                );
+              },
             ),
           );
         },
