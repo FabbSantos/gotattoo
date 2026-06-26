@@ -66,6 +66,10 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // Ship native debug symbols so Play can symbolicate native crashes.
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
             // Keep R8 from failing on flutter_stripe's optional classes.
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
